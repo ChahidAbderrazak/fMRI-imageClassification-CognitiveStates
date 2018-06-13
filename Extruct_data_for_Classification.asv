@@ -42,12 +42,9 @@ label_S=label_S';
 %%  Build clasifiaction data
 X=[X_P2;X_S2];
 y=[label_P;label_S];
-%% Shuffle data
-[X,y,shuffledRow] = shuffleRow(X,y);
 
 %% Run Classification
 for l=1:10
-    Acc(l)=Apply_GBN(0.72, X, y);
-    plot(Acc);
+Acc=Apply_GBN(0.72, X, y)
 end
 
