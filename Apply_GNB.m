@@ -1,6 +1,6 @@
 % p :     % proportion of rows to select for training
 
-function Acc=Apply_GBN(p, examples, labels)
+function Acc=Apply_GNB(p, examples, labels)
 
 [X_train,y_train, X_test,y_test]=SplitData(p, examples,labels);
 
