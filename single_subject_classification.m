@@ -1,13 +1,28 @@
 clear all
-load('data-starplus-04847-v7.mat')
+load('data-starplus-04799-v7.mat')
 trials=find([info.cond]>1);
 
 %% Returns data for specified trials
 [info0,data0,meta0]=transformIDM_selectTrials(info,data,meta,trials);
 
 %% Returns an IDM for specified ROIs
-[info1,data1,meta1] = transformIDM_selectROIVoxels(info0,data0,meta0,{'CALC' 'LIPL' 'LT' 'LTRIA' 'LOPER' 'LIPS' 'LDLPFC'})
+[info1,data1,meta1] = transformIDM_selectROIVoxels(info0,data0,meta0,{'CALC' 'LIPL' 'LT' 'LTRIA' 'LOPER' 'LIPS' 'LDLPFC'});
 
+%% Normalize the features 
+
+[info2,data2,meta2] = transformIDM_normalizeTrials(info1,data1,meta1);
+
+% norm_data2= zeros(size(data1{1,1},1),size(data1{1,1},2) );
+% 
+% for i=1:size(data1{1,1},1)
+%     norm_data2(i,:) = (data1{1,1}(i,:) - min(data1{1,1}(i,:))) / ( max(data1{1,1}(i,:)) - min(data1{1,1}(i,:)) );
+% 
+% end
+% for k=1:size(data1,1)
+%     n(k)= normalize(data1{k,1});
+% 
+% end    
+    
 %% Returns data for specified firstStimulus
 [infoP,dataP,metaP]=transformIDM_selectTrials(info1,data1,meta1,find([info1.firstStimulus]=='P'));
 [infoS,dataS,metaS]=transformIDM_selectTrials(info1,data1,meta1,find([info1.firstStimulus]=='S'));
