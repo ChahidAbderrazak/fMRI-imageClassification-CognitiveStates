@@ -1,12 +1,23 @@
 clear all
 load('data-starplus-04799-v7.mat')
-trials=find([info.cond]>1);
+trials=find([info.cond]>1); % The trials of S and P 
 
 %% Returns data for specified trials
 [info0,data0,meta0]=transformIDM_selectTrials(info,data,meta,trials);
 
 %% Returns an IDM for specified ROIs
 [info1,data1,meta1] = transformIDM_selectROIVoxels(info0,data0,meta0,{'CALC' 'LIPL' 'LT' 'LTRIA' 'LOPER' 'LIPS' 'LDLPFC'});
+
+%% Take the average
+    [info11,data11,meta11] = transformIDM_avgROIVoxels(info,data,meta,{'CALC' 'LIPL' 'LT' 'LTRIA' 'LOPER' 'LIPS' 'LDLPFC'});
+
+%    alltrials= 1:meta.ntrials;
+%    ts= [info.actionAnswer]==0;
+%    trialsOfInterest=alltrials(ts);
+%    [i,d,m]=transformIDM_avgTrials(info,data,meta,trialsOfInterest);
+%    plotVoxel(i,d,m,36,62,8);
+%    animate16Trial(i,d,m,1);
+% 
 
 %% Normalize the features 
 
