@@ -16,11 +16,23 @@
 % History
 % - 9/1/02 TMM Created file.
 
-function [rinfo,rdata,rmeta] = transformIDM_normalizeTrials(info,data,meta)
-  rdata = cell(meta.ntrials,1);  
-  for j=1:1:length(info)
-    rdata{j}=normalizeTrial(data{j});
-  end;
+function [rinfo,norm_data,rmeta] = transformIDM_normalizeTrials(info,data,meta)
+  
+  
+norm_data = cell(meta.ntrials,1);
+
+ for i=1:size(data,1)
+%      norm_data{i}= zeros(size(data{1,1},1),size(data{1,1},2) );
+    for j=1:size(data{i,1},1)
+        norm_data{i}(j,:) = (data{i,:}(j,:) - min(data{i,:}(j,:))) / ( max(data{i,:}(j,:)) - min(data{i,:}(j,:)) );
+    end
+ end 
+ 
+%  norm_data = cell(meta.ntrials,1);
+
+%   for j=1:1:length(info)
+%     rdata{j}=normalizeTrial(data{j});
+%   end;
 
   rinfo=info;
   rmeta=meta;

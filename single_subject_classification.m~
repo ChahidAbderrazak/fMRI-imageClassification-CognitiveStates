@@ -56,7 +56,7 @@ norm_data = cell(meta1.ntrials,1);
 [infoS2,dataS2,metaS2]=transformIDM_selectTimewindow(infoP,dataP,metaP,[17:32]);
 
 %%
-X_P11= [dataP1 ; dataP2];
+
 
 %% Create X and labels, data is converted to X by concatenating the multiple data rows to one single row
 [X_P1,labelsP1,exInfoP1]=idmToExamples_condLabel(infoP1,dataP1,metaP1);
