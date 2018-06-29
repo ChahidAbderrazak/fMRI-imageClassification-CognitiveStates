@@ -51,8 +51,8 @@ end
 
 %% Apply GNB
 
-[classifier] = trainClassifier(X,Y,'nbayes');   %train classifier
-[predictions] = applyClassifier(X,classifier);       %test it
+[classifier] = trainClassifier(X_train,Y,'nbayes');   %train classifier
+[predictions] = applyClassifier(X_test,classifier);       %test it
 
 [result,predictedLabels,trace] = summarizePredictions(predictions,classifier,'averageRank',Y);
 1-result{1}  % rank accuracy
