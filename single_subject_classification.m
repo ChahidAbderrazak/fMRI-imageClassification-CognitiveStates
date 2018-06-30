@@ -1,5 +1,6 @@
 clear all
-load('data-starplus-04799-v7.mat')
+load('data-starplus-04847-v7.mat')
+
 trials=find([info.cond]>1); % The trials of S and P 
 
 %% Returns data for specified trials
@@ -21,16 +22,16 @@ trials=find([info.cond]>1); % The trials of S and P
 [infoS2,dataS2,metaS2]=transformIDM_selectTimewindow(infoP,dataP,metaP,[17:32]);
 
 %% Normalize each snapshot
-[infoP1_norm,dataP1_norm,metaP1_norm] = transformIDM_normalizeTrials(infoP1,dataP1,metaP1);
-[infoP2_norm,dataP2_norm,metaP2_norm] = transformIDM_normalizeTrials(infoP2,dataP2,metaP2);
-[infoS1_norm,dataS1_norm,metaS1_norm] = transformIDM_normalizeTrials(infoS1,dataS1,metaS1);
-[infoS2_norm,dataS2_norm,metaS2_norm] = transformIDM_normalizeTrials(infoS2,dataS2,metaS2);
+% [infoP1,dataP1,metaP1] = transformIDMalizeTrials(infoP1,dataP1,metaP1);
+% [infoP2,dataP2,metaP2] = transformIDMalizeTrials(infoP2,dataP2,metaP2);
+% [infoS1,dataS1,metaS1] = transformIDMalizeTrials(infoS1,dataS1,metaS1);
+% [infoS2,dataS2,metaS2] = transformIDMalizeTrials(infoS2,dataS2,metaS2);
 
 %% Create X and labels, data is converted to X by concatenating the multiple data rows to one single row
-[X_P1,labelsP1,exInfoP1]=idmToExamples_condLabel(infoP1_norm,dataP1_norm,metaP1_norm);
-[X_P2,labelsP2,exInfoP2]=idmToExamples_condLabel(infoP2_norm,dataP2_norm,metaP2_norm);
-[X_S1,labelsS1,exInfoS1]=idmToExamples_condLabel(infoS1_norm,dataS1_norm,metaS1_norm);
-[X_S2,labelsS2,exInfoS2]=idmToExamples_condLabel(infoS2_norm,dataS2_norm,metaS2_norm);
+[X_P1,labelsP1,exInfoP1]=idmToExamples_condLabel(infoP1,dataP1,metaP1);
+[X_P2,labelsP2,exInfoP2]=idmToExamples_condLabel(infoP2,dataP2,metaP2);
+[X_S1,labelsS1,exInfoS1]=idmToExamples_condLabel(infoS1,dataS1,metaS1);
+[X_S2,labelsS2,exInfoS2]=idmToExamples_condLabel(infoS2,dataS2,metaS2);
 
 %% combine X and create labels.  Label 'picture' 1, label 'sentence' 2.
 X_P=[X_P1;X_P2]; %X_P1 is the 1st 8s and X_P2 for 2nd 8s for firstStimulus='P'
@@ -43,16 +44,15 @@ Y=[labelsP;labelsS];
 %% Shuffle data
 [X,Y,shuffledRow] = shuffleRow(X,Y);
 
-%% Run Classification
-for l=1:10
-    Acc(l)=Apply_GNB(0.72, X, Y);
-    plot(Acc);
-end
+% %% Run Classification
+% for l=1:10
+%     Acc(l)=Apply_GNB(0.72, X, Y);
+%     plot(Acc);
+% end
 
 %% Apply GNB
 
 [classifier] = trainClassifier(X,Y,'nbayes');   %train classifier
 [predictions] = applyClassifier(X,classifier);       %test it
-
 [result,predictedLabels,trace] = summarizePredictions(predictions,classifier,'averageRank',Y);
 1-result{1}  % rank accuracy
