@@ -1,5 +1,5 @@
 clear all
-load('data-starplus-04799-v7.mat')
+load('data-starplus-04847-v7.mat')
 
 trials=find([info.cond]>1); % The trials of S and P 
 
@@ -49,11 +49,7 @@ Y=[labelsP;labelsS];
 %     Acc(l)=Apply_GNB(0.72, X, Y);
 %     plot(Acc);
 % end
-%% Append Amplitude of fourier transform to the features
-[X_FT, Max_X_FT, I]= apply_fourier(X);
-X(:, size(X,2)+1)= Max_X_FT(:,1);
-
-
+%% App
 %% Apply GNB
 
 [classifier] = trainClassifier(X,Y,'nbayes');   %train classifier
