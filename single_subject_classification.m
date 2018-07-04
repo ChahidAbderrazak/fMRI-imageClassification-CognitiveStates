@@ -53,7 +53,10 @@ Y=[labelsP;labelsS];
 [X_FT, Max_X_FT, I]= apply_fourier(X);
 X(:, size(X,2)+1)= Max_X_FT(:,1);
 
-
+%% ESD
+ESD= X_FT.*conj(X_FT);
+ESD= sum(ESD,2);
+X(:, size(X,2)+1)= ESD(:,1);
 %% Apply GNB
 
 [classifier] = trainClassifier(X,Y,'nbayes');   %train classifier
