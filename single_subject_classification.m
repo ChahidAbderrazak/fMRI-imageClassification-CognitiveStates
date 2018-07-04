@@ -49,9 +49,11 @@ Y=[labelsP;labelsS];
 %     Acc(l)=Apply_GNB(0.72, X, Y);
 %     plot(Acc);
 % end
-%% Append Amplitude of fourier transform to the features
-[X_FT, Max_X_FT, I]= apply_fourier(X);
+%% Append the DC component and MAX Amplitude of fourier transform to the features
+[X_FT,Max_X_FT,I,X_DC]= apply_fourier(X);
+X(:, size(X,2)+1)= X_DC(:,1);
 X(:, size(X,2)+1)= Max_X_FT(:,1);
+X(:, size(X,2)+1)= I(:,1);
 
 %% ESD
 ESD= X_FT.*conj(X_FT);
