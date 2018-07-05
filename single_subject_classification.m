@@ -22,10 +22,10 @@ trials=find([info.cond]>1); % The trials of S and P
 [infoS2,dataS2,metaS2]=transformIDM_selectTimewindow(infoP,dataP,metaP,[17:32]);
 
 %% Normalize each snapshot
-% [infoP1,dataP1,metaP1] = transformIDMalizeTrials(infoP1,dataP1,metaP1);
-% [infoP2,dataP2,metaP2] = transformIDMalizeTrials(infoP2,dataP2,metaP2);
-% [infoS1,dataS1,metaS1] = transformIDMalizeTrials(infoS1,dataS1,metaS1);
-% [infoS2,dataS2,metaS2] = transformIDMalizeTrials(infoS2,dataS2,metaS2);
+[infoP1,dataP1,metaP1] = transformIDM_normalizeTrials(infoP1,dataP1,metaP1);
+[infoP2,dataP2,metaP2] = transformIDM_normalizeTrials(infoP2,dataP2,metaP2);
+[infoS1,dataS1,metaS1] = transformIDM_normalizeTrials(infoS1,dataS1,metaS1);
+[infoS2,dataS2,metaS2] = transformIDM_normalizeTrials(infoS2,dataS2,metaS2);
 
 %% Create X and labels, data is converted to X by concatenating the multiple data rows to one single row
 [X_P1,labelsP1,exInfoP1]=idmToExamples_condLabel(infoP1,dataP1,metaP1);
@@ -59,8 +59,24 @@ X(:, size(X,2)+1)= I(:,1);
 ESD= X_FT.*conj(X_FT);
 ESD= sum(ESD,2);
 X(:, size(X,2)+1)= ESD(:,1);
-%% Apply GNB
 
+%% Extract SCSA Features
+ addpath D:\SSI\Project\Matlab\SCSA_SS1_Features_Abderrazak-20180705T090220Z-001\Functions ; addpath D:\SSI\Project\Matlab\SCSA_SS1_Features_Abderrazak-20180705T090220Z-001\Functions\Abderrazak
+% addpath ./Functions ; addpath ./Functions/Abderrazak; 
+
+%% Generate SCSA Based Features
+h=1;gm=0.5;fs=1;
+[F_featuresA_h1, S_featuresA_h1, B_featuresA_h1, P_featuresA_h1,AF_featuresA_h1]=SCSA_Transform_features(X,h,gm,fs);
+X= [X F_featuresA_h1];
+X= [X S_featuresA_h1(:,1:52)]; %Increase the %error (-ve) 
+X= [X B_featuresA_h1]; 
+X= [X P_featuresA_h1];
+X(:,size(X,2)+1)= AF_featuresA_h1;
+
+%% Extract wavelet features
+
+
+%% Apply GNB
 [classifier] = trainClassifier(X,Y,'nbayes');   %train classifier
 [predictions] = applyClassifier(X,classifier);       %test it
 [result,predictedLabels,trace] = summarizePredictions(predictions,classifier,'averageRank',Y);
