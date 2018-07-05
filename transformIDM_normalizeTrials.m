@@ -26,7 +26,7 @@ norm_data = cell(meta.ntrials,1);
     for j=1:size(data{i,1},1)
         norm_data{i}(j,:) = (data{i,:}(j,:) - min(data{i,:}(j,:))) / ( max(data{i,:}(j,:)) - min(data{i,:}(j,:)) );
     end
- end 
+ end
  
 %  norm_data = cell(meta.ntrials,1);
 
