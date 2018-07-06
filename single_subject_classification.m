@@ -44,6 +44,8 @@ Y=[labelsP;labelsS];
 %% Shuffle data
 [X,Y,shuffledRow] = shuffleRow(X,Y);
 
+X= normalizeTrials(X, "true");
+
 % %% Run Classification
 % for l=1:10
 %     Acc(l)=Apply_GNB(0.72, X, Y);
