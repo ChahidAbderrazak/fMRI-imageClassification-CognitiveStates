@@ -46,11 +46,12 @@ Y=[labelsP;labelsS];
 
 % X= normalizeTrials(X, "true");
 
-% %% Run Classification
-% for l=1:10
-%     Acc(l)=Apply_GNB(0.72, X, Y);
-%     plot(Acc);
-% end
+%% Run Classification
+for l=1:10
+    Acc(l)=Apply_GNB(0.72, X, Y);
+    plot(Acc);
+end
+
 %% Append the DC component and MAX Amplitude of fourier transform to the features
 [X_FT,Max_X_FT,I,X_DC]= apply_fourier(X, string('false'));
 X(:, size(X,2)+1)= X_DC(:,1);
@@ -80,14 +81,31 @@ X(:,size(X,2)+1)= AF_featuresA_h1;
 %% Extract wavelet features
 addpath /Users/sehrism/Documents/MATLAB;
 wavelet_features= zeros(size(X,1),8);
+
 for i=1:size(X,1)
     wavelet_features(i,:)= getwaveletFeature(X(i,:));
 end
 
 X= [X wavelet_features];
     
+%% Apply LR
+%% Model training
+Mdl= fitglm(X(1:65,:), Y(1:65,:),'linear','Distribution','binomial','link', 'logit');
+
+ 
+%% Model_testing 
+% yfit=trainedClassifier.predictFcn(testing_set);
+yfit0 = Mdl.predict(X(66:80,:));
+yfit0=yfit0-min(yfit0);yfit0=yfit0/max(yfit0);
+yfit=double(yfit0>0.5);
+ 
+%% Compute the accuracy
+[accuracy0,sensitivity0,specificity0,precision0,gmean0,f1score0]=prediction_performance(X(61:80).class, yfit);
+ 
+ytrue=Combine_TS(:,end);
+
 %% Apply GNB
-[classifier] = trainClassifier(X,Y,'nbayes');   %train classifier
+[classifier] = trainClassifier(X,Y, 'nbayes');   %train classifier
 [predictions] = applyClassifier(X,classifier);       %test it
 [result,predictedLabels,trace] = summarizePredictions(predictions,classifier,'averageRank',Y);
 1-result{1}  % rank accuracy
