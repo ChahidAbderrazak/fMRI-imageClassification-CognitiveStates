@@ -2,7 +2,7 @@ function norm_data = normalizeTrials(data, all_array)
 
 norm_data= zeros(size(data,1),size(data,2));
 
-if all_array == "true"
+if all_array == string('true')
     X_max= max2(data);
     X_min= min2(data);
     X_max_min= X_max - X_min;

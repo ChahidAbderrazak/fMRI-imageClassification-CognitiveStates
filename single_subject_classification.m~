@@ -58,6 +58,7 @@ X= [X X_FT];
 X(:, size(X,2)+1)= Max_X_FT(:,1);
 X(:, size(X,2)+1)= I(:,1);
 
+
 %% ESD
 ESD= X_FT.*conj(X_FT);
 ESD= sum(ESD,2);
@@ -67,7 +68,6 @@ X(:, size(X,2)+1)= ESD(:,1);
 %  addpath D:\SSI\Project\Matlab\SCSA_SS1_Features_Abderrazak-20180705T090220Z-001\Functions ; addpath D:\SSI\Project\Matlab\SCSA_SS1_Features_Abderrazak-20180705T090220Z-001\Functions\Abderrazak
 % addpath ./Functions ; addpath ./Functions/Abderrazak; 
 addpath /Users/sehrism/Documents/MATLAB/SCSA_SS1_Features_Abderrazak/Functions; addpath /Users/sehrism/Documents/MATLAB/SCSA_SS1_Features_Abderrazak/Functions/Abderrazak;
-
 %% Generate SCSA Based Features
 h=1;gm=0.5;fs=1;
 [F_featuresA_h1, S_featuresA_h1, B_featuresA_h1, P_featuresA_h1,AF_featuresA_h1]=SCSA_Transform_features(X(:,1:112),h,gm,fs);
@@ -79,13 +79,8 @@ X(:,size(X,2)+1)= AF_featuresA_h1;
 
 %% Extract wavelet features
 addpath /Users/sehrism/Documents/MATLAB;
-wavelet_features= zeros(size(X,1),8);
-for i=1:size(X,1)
-    wavelet_features(i,:)= getwaveletFeature(X(i,:));
-end
 
-X= [X wavelet_features];
-    
+
 %% Apply GNB
 [classifier] = trainClassifier(X,Y,'nbayes');   %train classifier
 [predictions] = applyClassifier(X,classifier);       %test it

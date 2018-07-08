@@ -14,7 +14,7 @@ for k=1:size(X,1)
     [Max_X_FT(k,1), I(k,1)]= max(X_FT(k,:));
 end
 
-if normalize == "True"
+if normalize == string('true')
     X_FT= normalizeTrials(X_FT);
     Max_X_FT= normalizeTrials(Max_X_FT);
     X_DC= normalizeTrials(X_DC);
