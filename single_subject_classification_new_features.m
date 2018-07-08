@@ -48,23 +48,25 @@ Y=[labelsP;labelsS];
 
 %% Run Classification
 for l=1:10
-    Acc(l)=Apply_GNB(0.72, X, Y);
-    for
+    Acc(l)=Apply_GNB(0.90, X, Y);
     plot(Acc);
 end
 
+Avg_Acc= sum(Acc)/
+
+max(Acc)
 
 %% Append the DC component and MAX Amplitude of fourier transform to the features
 [X_FT,Max_X_FT,I,X_DC]= apply_fourier(X, string('false'));
-X(:, size(X,2)+1)= X_DC(:,1);
-X= [X X_FT];
-X(:, size(X,2)+1)= Max_X_FT(:,1);
-X(:, size(X,2)+1)= I(:,1);
+% X(:, size(X,2)+1)= X_DC(:,1);
+% X= [X X_FT];
+% X(:, size(X,2)+1)= Max_X_FT(:,1);
+% X(:, size(X,2)+1)= I(:,1);
 
 %% ESD
 ESD= X_FT.*conj(X_FT);
 ESD= sum(ESD,2);
-X(:, size(X,2)+1)= ESD(:,1);
+% X(:, size(X,2)+1)= ESD(:,1);
 
 %% Extract SCSA Features
 %  addpath D:\SSI\Project\Matlab\SCSA_SS1_Features_Abderrazak-20180705T090220Z-001\Functions ; addpath D:\SSI\Project\Matlab\SCSA_SS1_Features_Abderrazak-20180705T090220Z-001\Functions\Abderrazak
@@ -74,11 +76,11 @@ addpath /Users/sehrism/Documents/MATLAB/SCSA_SS1_Features_Abderrazak/Functions; 
 %% Generate SCSA Based Features
 h=1;gm=0.5;fs=1;
 [F_featuresA_h1, S_featuresA_h1, B_featuresA_h1, P_featuresA_h1,AF_featuresA_h1]=SCSA_Transform_features(X(:,1:112),h,gm,fs);
-X= [X F_featuresA_h1];
-X= [X S_featuresA_h1(:,1:52)]; %Increase the %error
-X= [X B_featuresA_h1];
-X= [X P_featuresA_h1];
-X(:,size(X,2)+1)= AF_featuresA_h1;
+% X= [X F_featuresA_h1];
+% X= [X S_featuresA_h1(:,1:52)]; %Increase the %error
+% X= [X B_featuresA_h1];
+% X= [X P_featuresA_h1];
+% X(:,size(X,2)+1)= AF_featuresA_h1;
 
 %% Extract wavelet features
 addpath /Users/sehrism/Documents/MATLAB;
@@ -88,7 +90,7 @@ for i=1:size(X,1)
     wavelet_features(i,:)= getwaveletFeature(X(i,:));
 end
 
-X= [X wavelet_features];
+% X= [X wavelet_features];
     
 %% Apply LR
 %% Model training
@@ -117,3 +119,8 @@ ytrue=Combine_TS(:,end);
 [predictions] = applyClassifier(X,classifier);       %test it
 [result,predictedLabels,trace] = summarizePredictions(predictions,classifier,'averageRank',Y);
 1-result{1}  % rank accuracy
+
+
+%% Apply GNB and LR
+
+Classification_sperate_features

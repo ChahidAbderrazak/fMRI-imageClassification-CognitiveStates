@@ -46,12 +46,6 @@ Y=[labelsP;labelsS];
 
 % X= normalizeTrials(X, "true");
 
-%% Run Classification
-for l=1:10
-    Acc(l)=Apply_GNB(0.72, X, Y);
-    plot(Acc);
-end
-
 %% Append the DC component and MAX Amplitude of fourier transform to the features
 [X_FT,Max_X_FT,I,X_DC]= apply_fourier(X, string('false'));
 X(:, size(X,2)+1)= X_DC(:,1);
@@ -65,7 +59,7 @@ ESD= sum(ESD,2);
 X(:, size(X,2)+1)= ESD(:,1);
 
 %% Extract SCSA Features
-%  addpath D:\SSI\Project\Matlab\SCSA_SS1_Features_Abderrazak-20180705T090220Z-001\Functions ; addpath D:\SSI\Project\Matlab\SCSA_SS1_Features_Abderrazak-20180705T090220Z-001\Functions\Abderrazak
+% addpath D:\SSI\Project\Matlab\SCSA_SS1_Features_Abderrazak-20180705T090220Z-001\Functions ; addpath D:\SSI\Project\Matlab\SCSA_SS1_Features_Abderrazak-20180705T090220Z-001\Functions\Abderrazak
 % addpath ./Functions ; addpath ./Functions/Abderrazak; 
 addpath /Users/sehrism/Documents/MATLAB/SCSA_SS1_Features_Abderrazak/Functions; addpath /Users/sehrism/Documents/MATLAB/SCSA_SS1_Features_Abderrazak/Functions/Abderrazak;
 
@@ -92,7 +86,6 @@ X= [X wavelet_features];
 %% Model training
 Mdl= fitglm(X(1:65,:), Y(1:65,:),'linear','Distribution','binomial','link', 'logit');
 
- 
 %% Model_testing 
 % yfit=trainedClassifier.predictFcn(testing_set);
 yfit0 = Mdl.predict(X(66:80,:));
@@ -115,3 +108,13 @@ ytrue=Combine_TS(:,end);
 [predictions] = applyClassifier(X,classifier);       %test it
 [result,predictedLabels,trace] = summarizePredictions(predictions,classifier,'averageRank',Y);
 1-result{1}  % rank accuracy
+
+%% Run Classification
+for l=1:10
+    Acc(l)=Apply_GNB(0.90, X, Y);
+    plot(Acc);
+end
+
+Avg_Acc= sum(Acc)/
+
+max(Acc)

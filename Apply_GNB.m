@@ -17,8 +17,8 @@ function Acc=Apply_GNB(p, examples, labels)
 % summarize the results of the above predictions.   
 
  [result,predictedLabels,trace] = summarizePredictions(y_predicted,classifier,'averageRank',y_test);
- Acc=1-result{1}  % rank accuracy
- y_test'
+ Acc=1-result{1};  % rank accuracy
+ y_test';
  
 function [X_train,y_train, X_test,y_test]=SplitData(trainRatio,X,y)
 
