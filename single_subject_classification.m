@@ -1,5 +1,5 @@
 clear all
-load('data-starplus-04799-v7.mat')
+load('data-starplus-05680-v7.mat')
 
 trials=find([info.cond]>1); % The trials of S and P 
 
@@ -44,7 +44,7 @@ Y=[labelsP;labelsS];
 %% Shuffle data
 [X,Y,shuffledRow] = shuffleRow(X,Y);
 
-X= normalizeTrials(X, "true");
+% X= normalizeTrials(X, "true");
 
 % %% Run Classification
 % for l=1:10
@@ -54,6 +54,7 @@ X= normalizeTrials(X, "true");
 %% Append the DC component and MAX Amplitude of fourier transform to the features
 [X_FT,Max_X_FT,I,X_DC]= apply_fourier(X, "false");
 X(:, size(X,2)+1)= X_DC(:,1);
+X= [X X_FT];
 X(:, size(X,2)+1)= Max_X_FT(:,1);
 X(:, size(X,2)+1)= I(:,1);
 
@@ -71,7 +72,7 @@ X(:, size(X,2)+1)= ESD(:,1);
 h=1;gm=0.5;fs=1;
 [F_featuresA_h1, S_featuresA_h1, B_featuresA_h1, P_featuresA_h1,AF_featuresA_h1]=SCSA_Transform_features(X(:,1:112),h,gm,fs);
 X= [X F_featuresA_h1];
-% X= [X S_featuresA_h1(:,1:52)]; %Increase the %error (-ve) 
+X= [X S_featuresA_h1(:,1:52)]; %Increase the %error
 X= [X B_featuresA_h1];
 X= [X P_featuresA_h1];
 X(:,size(X,2)+1)= AF_featuresA_h1;
@@ -81,6 +82,12 @@ X(:,size(X,2)+1)= AF_featuresA_h1;
 
 %% Apply GNB
 [classifier] = trainClassifier(X,Y,'nbayes');   %train classifier
+[predictions] = applyClassifier(X,classifier);       %test it
+[result,predictedLabels,trace] = summarizePredictions(predictions,classifier,'averageRank',Y);
+1-result{1}  % rank accuracy
+
+%% Apply LR
+[classifier] = trainClassifier(X,Y,'logisticRegression');   %train classifier
 [predictions] = applyClassifier(X,classifier);       %test it
 [result,predictedLabels,trace] = summarizePredictions(predictions,classifier,'averageRank',Y);
 1-result{1}  % rank accuracy
