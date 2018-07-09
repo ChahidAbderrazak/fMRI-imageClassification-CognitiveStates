@@ -7,7 +7,12 @@ trials=find([info.cond]>1); % The trials of S and P
 [info0,data0,meta0]=transformIDM_selectTrials(info,data,meta,trials);
 
 %% Take the average of each ROIs
- [infoAvg,dataAvg,metaAvg] = transformIDM_avgROIVoxels(info0,data0,meta0,{'CALC' 'LIPL' 'LT' 'LTRIA' 'LOPER' 'LIPS' 'LDLPFC'});
+
+[infoAvg,dataAvg,metaAvg] = transformIDM_selectROIVoxels(info0,data0,meta0,{'CALC'});
+
+% [infoAvg,dataAvg,metaAvg] = transformIDM_selectROIVoxels(info0,data0,meta0,{'CALC' 'LIPL' 'LT' 'LTRIA' 'LOPER' 'LIPS' 'LDLPFC'});
+
+%  [infoAvg,dataAvg,metaAvg] = transformIDM_avgROIVoxels(info0,data0,meta0,{'CALC' 'LIPL' 'LT' 'LTRIA' 'LOPER' 'LIPS' 'LDLPFC'});
 
 %% Returns data for specified firstStimulus
 [infoP,dataP,metaP]=transformIDM_selectTrials(infoAvg,dataAvg,metaAvg,find([infoAvg.firstStimulus]=='P'));
@@ -36,8 +41,8 @@ trials=find([info.cond]>1); % The trials of S and P
 %% combine X and create labels.  Label 'picture' 1, label 'sentence' 2.
 X_P=[X_P1;X_P2]; %X_P1 is the 1st 8s and X_P2 for 2nd 8s for firstStimulus='P'
 X_S=[X_S1;X_S2]; %X_S1 is the 1st 8s and X_S2 for 2nd 8s for firstStimulus='S'
-labelsP=zeros(size(X_P,1),1);
-labelsS=ones(size(X_S,1),1);
+labelsP=ones(size(X_P,1),1);
+labelsS=ones(size(X_S,1),1)+1;
 X=[X_P;X_S];
 Y=[labelsP;labelsS];
 
@@ -86,17 +91,17 @@ end
     
 %% Apply LR
 %% Model training
-Mdl= fitglm(X(1:60,:), Y(1:60,:),'linear','Distribution','binomial','link', 'logit');
+Mdl= fitglm(X(1:70,:), Y(1:70,:),'linear','Distribution','binomial','link', 'logit');
 
  
 %% Model_testing 
 % yfit=trainedClassifier.predictFcn(testing_set);
-yfit0 = Mdl.predict(X(61:80,:));
+yfit0 = Mdl.predict(X(71:80,:));
 yfit0=yfit0-min(yfit0);yfit0=yfit0/max(yfit0);
 yfit=double(yfit0>0.5);
  
 %% Compute the accuracy
-[accuracy0,sensitivity0,specificity0,precision0,gmean0,f1score0]=prediction_performance(X(66:80).class, yfit);
+[accuracy0,sensitivity0,specificity0,precision0,gmean0,f1score0]=prediction_performance(Y(71:80), yfit);
  
 ytrue=Combine_TS(:,end);
 
