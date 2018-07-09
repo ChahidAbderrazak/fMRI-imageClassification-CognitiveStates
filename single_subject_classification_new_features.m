@@ -46,15 +46,7 @@ Y=[labelsP;labelsS];
 
 % X= normalizeTrials(X, "true");
 
-%% Run Classification
-for l=1:10
-    Acc(l)=Apply_GNB(0.90, X, Y);
-    plot(Acc);
-end
 
-Avg_Acc= sum(Acc)/
-
-max(Acc)
 
 %% Append the DC component and MAX Amplitude of fourier transform to the features
 [X_FT,Max_X_FT,I,X_DC]= apply_fourier(X, string('false'));
@@ -120,7 +112,15 @@ ytrue=Combine_TS(:,end);
 [result,predictedLabels,trace] = summarizePredictions(predictions,classifier,'averageRank',Y);
 1-result{1}  % rank accuracy
 
-
+% %% Run Classification
+% for l=1:10
+%     Acc(l)=Apply_GNB(0.90, X, Y);
+%     plot(Acc);
+% end
+% 
+% Avg_Acc= sum(Acc)/
+% 
+% max(Acc)
 %% Apply GNB and LR
 
 Classification_sperate_features
