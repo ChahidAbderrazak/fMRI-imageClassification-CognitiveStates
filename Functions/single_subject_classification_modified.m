@@ -1,5 +1,5 @@
 clear all
-load('data-starplus-05675-v7.mat')
+load('data-starplus-04799-v7.mat')
 
 trials=find([info.cond]>1); % The trials of S and P 
 
@@ -8,7 +8,7 @@ trials=find([info.cond]>1); % The trials of S and P
 
 %% Take the average of each ROIs
 
-[infoAvg,dataAvg,metaAvg] = transformIDM_selectROIVoxels(info0,data0,meta0,{'CALC'});
+% [infoAvg,dataAvg,metaAvg] = transformIDM_selectROIVoxels(info0,data0,meta0,{'CALC'});
 
 % [infoAvg,dataAvg,metaAvg] = transformIDM_selectROIVoxels(info0,data0,meta0,{'CALC' 'LIPL' 'LT' 'LTRIA' 'LOPER' 'LIPS' 'LDLPFC'});
 
