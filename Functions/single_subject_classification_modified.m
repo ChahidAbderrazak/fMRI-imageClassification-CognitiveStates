@@ -1,6 +1,9 @@
 clear all
+addpath ./Functions
+addpath ./Functions/Netlab
+addpath ./datasets
 load('data-starplus-04799-v7.mat')
-
+normalization=1;
 trials=find([info.cond]>1); % The trials of S and P 
 
 %% Returns data for specified trials
@@ -10,9 +13,9 @@ trials=find([info.cond]>1); % The trials of S and P
 
 % [infoAvg,dataAvg,metaAvg] = transformIDM_selectROIVoxels(info0,data0,meta0,{'CALC'});
 
-% [infoAvg,dataAvg,metaAvg] = transformIDM_selectROIVoxels(info0,data0,meta0,{'CALC' 'LIPL' 'LT' 'LTRIA' 'LOPER' 'LIPS' 'LDLPFC'});
+[infoAvg,dataAvg,metaAvg] = transformIDM_selectROIVoxels(info0,data0,meta0,{'CALC' 'LIPL' 'LT' 'LTRIA' 'LOPER' 'LIPS' 'LDLPFC'});
 
- [infoAvg,dataAvg,metaAvg] = transformIDM_avgROIVoxels(info0,data0,meta0,{'CALC' 'LIPL' 'LT' 'LTRIA' 'LOPER' 'LIPS' 'LDLPFC'});
+%  [infoAvg,dataAvg,metaAvg] = transformIDM_avgROIVoxels(info0,data0,meta0,{'CALC' 'LIPL' 'LT' 'LTRIA' 'LOPER' 'LIPS' 'LDLPFC'});
 
 %% Returns data for specified firstStimulus
 [infoP,dataP,metaP]=transformIDM_selectTrials(infoAvg,dataAvg,metaAvg,find([infoAvg.firstStimulus]=='P'));
@@ -27,11 +30,12 @@ trials=find([info.cond]>1); % The trials of S and P
 [infoS2,dataS2,metaS2]=transformIDM_selectTimewindow(infoP,dataP,metaP,[17:32]);
 
 %% Normalize each snapshot
-% [infoP1,dataP1,metaP1] = transformIDM_normalizeTrials(infoP1,dataP1,metaP1);
-% [infoP2,dataP2,metaP2] = transformIDM_normalizeTrials(infoP2,dataP2,metaP2);
-% [infoS1,dataS1,metaS1] = transformIDM_normalizeTrials(infoS1,dataS1,metaS1);
-% [infoS2,dataS2,metaS2] = transformIDM_normalizeTrials(infoS2,dataS2,metaS2);
-
+if normalization==1
+    [infoP1,dataP1,metaP1] = transformIDM_normalizeTrials(infoP1,dataP1,metaP1);
+    [infoP2,dataP2,metaP2] = transformIDM_normalizeTrials(infoP2,dataP2,metaP2);
+    [infoS1,dataS1,metaS1] = transformIDM_normalizeTrials(infoS1,dataS1,metaS1);
+    [infoS2,dataS2,metaS2] = transformIDM_normalizeTrials(infoS2,dataS2,metaS2);
+end
 %% Create X and labels, data is converted to X by concatenating the multiple data rows to one single row
 [X_P1,labelsP1,exInfoP1]=idmToExamples_condLabel(infoP1,dataP1,metaP1);
 [X_P2,labelsP2,exInfoP2]=idmToExamples_condLabel(infoP2,dataP2,metaP2);
@@ -55,10 +59,10 @@ Y=[labelsP;labelsS];
 
 %% Append the DC component and MAX Amplitude of fourier transform to the features
 [X_FT,Max_X_FT,I,X_DC]= apply_fourier(X, string('false'));
-X(:, size(X,2)+1)= X_DC(:,1);
-X= [X X_FT];
-X(:, size(X,2)+1)= Max_X_FT(:,1);
-X(:, size(X,2)+1)= I(:,1);
+% X(:, size(X,2)+1)= X_DC(:,1);
+% X= [X X_FT];
+% X(:, size(X,2)+1)= Max_X_FT(:,1);
+% X(:, size(X,2)+1)= I(:,1);
 
 %% ESD
 ESD= X_FT.*conj(X_FT);
@@ -87,36 +91,52 @@ for i=1:size(X,1)
     wavelet_features(i,:)= getwaveletFeature(X(i,:));
 end
 
+% classify_features
+Classify_raw_plus_features
+
 % X= [X wavelet_features];
     
-%% Apply LR
-%% Model training
-Mdl= fitglm(X(1:70,:), Y(1:70,:),'linear','Distribution','binomial','link', 'logit');
-
- 
-%% Model_testing 
-% yfit=trainedClassifier.predictFcn(testing_set);
-yfit0 = Mdl.predict(X(71:80,:));
-yfit0=yfit0-min(yfit0);yfit0=yfit0/max(yfit0);
-yfit=double(yfit0>0.5);
- 
-%% Compute the accuracy
-[accuracy0,sensitivity0,specificity0,precision0,gmean0,f1score0]=prediction_performance(Y(71:80), yfit);
- 
-ytrue=Combine_TS(:,end);
-
+% %% Apply LR
+% %% Model training
+% Mdl= fitglm(X(1:70,:), Y(1:70,:),'linear','Distribution','binomial','link', 'logit');
+% 
+%  
+% %% Model_testing 
+% % yfit=trainedClassifier.predictFcn(testing_set);
+% yfit0 = Mdl.predict(X(71:80,:));
+% yfit0=yfit0-min(yfit0);yfit0=yfit0/max(yfit0);
+% yfit=double(yfit0>0.5);
+%  
+% %% Compute the accuracy
+% [accuracy0,sensitivity0,specificity0,precision0,gmean0,f1score0]=prediction_performance(Y(71:80), yfit);
+%  
+% ytrue=Combine_TS(:,end);
+% 
 %% Apply GNB
-[classifier] = trainClassifier(X,Y, 'nbayes');   %train classifier
-[predictions] = applyClassifier(X,classifier);       %test it
-[result,predictedLabels,trace] = summarizePredictions(predictions,classifier,'averageRank',Y);
-1-result{1}  % rank accuracy
+% [classifier] = trainClassifier(X(1:78,:),Y(1:78,1), 'nbayes');   %train classifier
+% [predictions] = applyClassifier(X(79:80,:),classifier);       %test it
+% [result,predictedLabels,trace] = summarizePredictions(predictions,classifier,'averageRank',Y(79:80,1));
+% 1-result{1}  % rank accuracy
+% 
+% %% Apply LR
+% [classifier] = trainClassifier(X,Y,'logisticRegression');   %train classifier
+% [predictions] = applyClassifier(X,classifier);       %test it
+% [result,predictedLabels,trace] = summarizePredictions(predictions,classifier,'averageRank',Y);
+% 1-result{1}  % rank accuracy
+%% 
 
-%% Apply LR
-[classifier] = trainClassifier(X,Y,'logisticRegression');   %train classifier
-[predictions] = applyClassifier(X,classifier);       %test it
-[result,predictedLabels,trace] = summarizePredictions(predictions,classifier,'averageRank',Y);
-1-result{1}  % rank accuracy
 
+% for i=1:8
+%     
+%     [classifier] = trainClassifier(X(trIdx,:),Y(trIdx,:), 'nbayes');   %train classifier
+%     
+%     [y_predicted] = applyClassifier(X_test,classifier);       %test it
+%     
+%     % summarize the results of the above predictions.
+%     
+%     [result,predictedLabels,trace] = summarizePredictions(y_predicted,classifier,'averageRank',y_test);
+%     Acc(i)=1-result{1}  % rank accuracy
+% end
 % %% Run Classification
 % for l=1:10
 %     Acc(l)=Apply_GNB(0.90, X, Y);
@@ -126,6 +146,20 @@ ytrue=Combine_TS(:,end);
 % Avg_Acc= sum(Acc)/
 % 
 % max(Acc)
+% count=80;
+% count2=0;
+% for i=1:80
+%     count1=count-i;
+%     count= count-(i-1);
+%     [classifier] = trainClassifier(X(1:(count1+count2+i),:),Y(1:(count1+count2+i),1), 'nbayes');   %train classifier
+%     [predictions] = applyClassifier(X(count,:),classifier);       %test it
+%     [result,predictedLabels,trace] = summarizePredictions(predictions,classifier,'averageRank',Y(j,1));
+%     1-result{1}  % rank accuracy
+%     count2= count2+1;
+% 
+% end
+
+
 %% Apply GNB and LR
 
-Classification_sperate_features
+% Classification_sperate_features

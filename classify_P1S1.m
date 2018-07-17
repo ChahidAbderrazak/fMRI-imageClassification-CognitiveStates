@@ -1,13 +1,17 @@
 clear all
-load('data-starplus-05675-v7.mat')
-
-trials=find([info.cond]>1); % The trials of S and P 
+addpath ./Functions
+addpath ./Functions/Netlab
+addpath ./datasets
+load('data-starplus-05710-v7.mat')
+normalization= 0;
+trials=find([info.cond]>1); % The trials of S and P
 
 %% Returns data for specified trials
 [info0,data0,meta0]=transformIDM_selectTrials(info,data,meta,trials);
 
+
 %% Take the average of each ROIs
- [infoAvg,dataAvg,metaAvg] = transformIDM_avgROIVoxels(info0,data0,meta0,{'CALC' 'LIPL' 'LT' 'LTRIA' 'LOPER' 'LIPS' 'LDLPFC'});
+ [infoAvg,dataAvg,metaAvg] = transformIDM_avgROIVoxels(info0,data0,meta0,{'CALC' 'LDLPFC' 'LIPL' 'LIPS' 'LOPER' 'LT' 'LTRIA'});
 
 %% Returns data for specified firstStimulus
 [infoP,dataP,metaP]=transformIDM_selectTrials(infoAvg,dataAvg,metaAvg,find([infoAvg.firstStimulus]=='P'));
@@ -17,41 +21,24 @@ trials=find([info.cond]>1); % The trials of S and P
 [infoP1,dataP1,metaP1]=transformIDM_selectTimewindow(infoP,dataP,metaP,[1:16]);
 [infoS1,dataS1,metaS1]=transformIDM_selectTimewindow(infoS,dataS,metaS,[1:16]);
 
-%% Returns IDM for the 2nd 8 seconds 
-[infoP2,dataP2,metaP2]=transformIDM_selectTimewindow(infoS,dataS,metaS,[17:32]);
-[infoS2,dataS2,metaS2]=transformIDM_selectTimewindow(infoP,dataP,metaP,[17:32]);
-
 %% Normalize each snapshot
-% [infoP1,dataP1,metaP1] = transformIDM_normalizeTrials(infoP1,dataP1,metaP1);
-% [infoP2,dataP2,metaP2] = transformIDM_normalizeTrials(infoP2,dataP2,metaP2);
-% [infoS1,dataS1,metaS1] = transformIDM_normalizeTrials(infoS1,dataS1,metaS1);
-% [infoS2,dataS2,metaS2] = transformIDM_normalizeTrials(infoS2,dataS2,metaS2);
-
+if normalization==1
+    [infoP1,dataP1,metaP1] = transformIDM_normalizeTrials(infoP1,dataP1,metaP1);
+    [infoS1,dataS1,metaS1] = transformIDM_normalizeTrials(infoS1,dataS1,metaS1);
+end
 %% Create X and labels, data is converted to X by concatenating the multiple data rows to one single row
-[X_P1,labelsP1,exInfoP1]=idmToExamples_condLabel(infoP1,dataP1,metaP1);
-[X_P2,labelsP2,exInfoP2]=idmToExamples_condLabel(infoP2,dataP2,metaP2);
-[X_S1,labelsS1,exInfoS1]=idmToExamples_condLabel(infoS1,dataS1,metaS1);
-[X_S2,labelsS2,exInfoS2]=idmToExamples_condLabel(infoS2,dataS2,metaS2);
+[X_P1,labelsP1,exInfoP1]=idmToExamples_condLabel(infoP1,dataP1,metaP1); %X_P1 is the 1st 8s and X_P2 for 2nd 8s for firstStimulus='P'
+[X_S1,labelsS1,exInfoS1]=idmToExamples_condLabel(infoS1,dataS1,metaS1); %X_S1 is the 1st 8s and X_S2 for 2nd 8s for firstStimulus='S'
 
 %% combine X and create labels.  Label 'picture' 1, label 'sentence' 2.
-X_P=[X_P1;X_P2]; %X_P1 is the 1st 8s and X_P2 for 2nd 8s for firstStimulus='P'
-X_S=[X_S1;X_S2]; %X_S1 is the 1st 8s and X_S2 for 2nd 8s for firstStimulus='S'
-labelsP=ones(size(X_P,1),1);
-labelsS=ones(size(X_S,1),1)+1;
-X=[X_P;X_S];
+
+labelsP=ones(size(X_P1,1),1);
+labelsS=ones(size(X_S1,1),1)+1;
+X=[X_P1;X_S1];
 Y=[labelsP;labelsS];
 
 %% Shuffle data
 [X,Y,shuffledRow] = shuffleRow(X,Y);
-
-% X= normalizeTrials(X, "true");
-
-%% Run Classification
-for l=1:10
-    Acc(l)=Apply_GNB(0.72, X, Y);
-    for
-    plot(Acc);
-end
 
 
 %% Append the DC component and MAX Amplitude of fourier transform to the features
@@ -88,32 +75,10 @@ for i=1:size(X,1)
     wavelet_features(i,:)= getwaveletFeature(X(i,:));
 end
 
-X= [X wavelet_features];
-    
-%% Apply LR
-%% Model training
-Mdl= fitglm(X(1:65,:), Y(1:65,:),'linear','Distribution','binomial','link', 'logit');
-
- 
-%% Model_testing 
-% yfit=trainedClassifier.predictFcn(testing_set);
-yfit0 = Mdl.predict(X(66:80,:));
-yfit0=yfit0-min(yfit0);yfit0=yfit0/max(yfit0);
-yfit=double(yfit0>0.5);
- 
-%% Compute the accuracy
-[accuracy0,sensitivity0,specificity0,precision0,gmean0,f1score0]=prediction_performance(X(61:80).class, yfit);
- 
-ytrue=Combine_TS(:,end);
-
+% X= [X wavelet_features];
 %% Apply GNB
 [classifier] = trainClassifier(X,Y, 'nbayes');   %train classifier
 [predictions] = applyClassifier(X,classifier);       %test it
 [result,predictedLabels,trace] = summarizePredictions(predictions,classifier,'averageRank',Y);
 1-result{1}  % rank accuracy
 
-%% Apply LR
-[classifier] = trainClassifier(X,Y,'logisticRegression');   %train classifier
-[predictions] = applyClassifier(X,classifier);       %test it
-[result,predictedLabels,trace] = summarizePredictions(predictions,classifier,'averageRank',Y);
-1-result{1}  % rank accuracy

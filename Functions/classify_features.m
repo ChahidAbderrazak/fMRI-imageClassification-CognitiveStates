@@ -1,63 +1,66 @@
+clear acc acc1 acc2 X_added 
 for i=1:4
 
     switch(i)
         case 1
+            [acc1, acc2]= Apply_LeavOut_classification(X, Y);
+            acc=[acc1,acc2];
         
-        for j=1:4
+        for j=2:5
             switch(j)
 
-                case 1
+                case 2
                 X_added=X_FT;
 
-                case 2
+                case 3
                 clear X_added
                 X_added=Max_X_FT;
 
-                case 3
-                X_added=I;
-
                 case 4
-                X_added=X_DC;
+                X_added(:,end+1)=I;
+
+                case 5
+                X_added(:,end+1)=X_DC;
                 
             end
             
            clear X_fourier
            X_fourier= X_added;
-           [acc1, acc2]= Apply_classification_to_data(X_fourier, Y);
+           [acc1, acc2]= Apply_LeavOut_classification(X_fourier, Y);
            acc(j,1:2)=[acc1,acc2];
          end
         
         case 2
             X_added= ESD;
             X_ESD=X_added;
-           [acc1, acc2]= Apply_classification_to_data(X_ESD, Y);
+           [acc1, acc2]= Apply_LeavOut_classification(X_ESD, Y);
            acc(end+1,1:2)=[acc1,acc2];
             
         case 3
             X_added= wavelet_features;
             X_wavelet= X_added;
-           [acc1, acc2]= Apply_classification_to_data(X_wavelet, Y);
+           [acc1, acc2]= Apply_LeavOut_classification(X_wavelet, Y);
            acc(end+1,1:2)=[acc1,acc2];
            
         case 4
         
-         for j=7:11
+         for j=8:12
             switch(j)
 
-                case 7
+                case 8
                 X_added=F_featuresA_h1;
 
-                case 8
+                case 9
                 X_added=S_featuresA_h1;
 
-                case 9
+                case 10
                 clear X_added
                 X_added=B_featuresA_h1;
 
-                case 10
+                case 11
                 X_added=P_featuresA_h1;
 
-                case 11
+                case 12
                 clear X_added
                 X_added= AF_featuresA_h1;
         
@@ -65,7 +68,7 @@ for i=1:4
             
            clear X_SCSA
            X_SCSA=X_added;
-           [acc1, acc2]= Apply_classification_to_data(X_SCSA, Y);
+           [acc1, acc2]= Apply_LeavOut_classification(X_SCSA, Y);
            acc(j,1:2)=[acc1,acc2];
              
          end
