@@ -78,11 +78,10 @@ for i=1:6
            acc(j,1:2)=[acc1,acc2];
              
          end
-         
         case 6
-            X_added= [X_FT P_featuresA_h1];
-            X_FT_SCSA= [X X_added];
-            [acc1, acc2]= Apply_LeavOut_classification(X_FT_SCSA, Y);
+            X_added= [X_;
+            X_wavelet= [X X_added];
+            [acc1, acc2]= Apply_LeavOut_classification(X_wavelet, Y);
             acc(end+1,1:2)=[acc1,acc2];
            
 
