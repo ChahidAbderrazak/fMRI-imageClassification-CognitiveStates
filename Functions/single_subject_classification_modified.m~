@@ -14,7 +14,7 @@ trials=find([info.cond]>1); % The trials of S and P
 
 % [infoAvg,dataAvg,metaAvg] = transformIDM_selectROIVoxels(info0,data0,meta0,{'CALC'});
 
-[infoAvg,dataAvg,metaAvg] = transformIDM_selectROIVoxels(info0,data0,meta0,{'CALC'});
+[infoAvg,dataAvg,metaAvg] = transformIDM_selectROIVoxels(info0,data0,meta0,{'CALC' 'LIPS'});
 
 %  [infoAvg,dataAvg,metaAvg] = transformIDM_avgROIVoxels(info0,data0,meta0,{'CALC' 'LIPL' 'LT' 'LTRIA' 'LOPER' 'LIPS' 'LDLPFC'});
 
@@ -46,8 +46,8 @@ end
 %% combine X and create labels.  Label 'picture' 1, label 'sentence' 2.
 X_P=[X_P1;X_P2]; %X_P1 is the 1st 8s and X_P2 for 2nd 8s for firstStimulus='P'
 X_S=[X_S1;X_S2]; %X_S1 is the 1st 8s and X_S2 for 2nd 8s for firstStimulus='S'
-labelsP=ones(size(X_P,1),1);
-labelsS=ones(size(X_S,1),1)+1;
+labelsP=zeros(size(X_P,1),1);
+labelsS=ones(size(X_S,1),1);
 X=[X_P;X_S];
 Y=[labelsP;labelsS];
 
@@ -56,10 +56,8 @@ Y=[labelsP;labelsS];
 
 % X= normalizeTrials(X, "true");
 
-%% PWM
-PWM = extract_PWM(X_P, X_S);
 
-[acc1, acc2]= Apply_LeavOut_classification(X, Y);
+
 %% Append the DC component and MAX Amplitude of fourier transform to the features
 [X_FT,Max_X_FT,I,X_DC]= apply_fourier(X, string('false'));
 % X(:, size(X,2)+1)= X_DC(:,1);
@@ -101,20 +99,20 @@ Classify_raw_plus_features
 % X= [X wavelet_features];
     
 % %% Apply LR
-% %% Model training
-% Mdl= fitglm(X(1:70,:), Y(1:70,:),'linear','Distribution','binomial','link', 'logit');
-% 
-%  
-% %% Model_testing 
-% % yfit=trainedClassifier.predictFcn(testing_set);
-% yfit0 = Mdl.predict(X(71:80,:));
-% yfit0=yfit0-min(yfit0);yfit0=yfit0/max(yfit0);
-% yfit=double(yfit0>0.5);
-%  
-% %% Compute the accuracy
-% [accuracy0,sensitivity0,specificity0,precision0,gmean0,f1score0]=prediction_performance(Y(71:80), yfit);
-%  
-% ytrue=Combine_TS(:,end);
+%% Model training
+Mdl= fitglm(X(1:70,:), Y(1:70,:),'linear','Distribution','binomial','link', 'logit');
+
+ 
+%% Model_testing 
+% yfit=trainedClassifier.predictFcn(testing_set);
+yfit0 = Mdl.predict(X(71:80,:));
+yfit0=yfit0-min(yfit0);yfit0=yfit0/max(yfit0);
+yfit=double(yfit0>0.5);
+ 
+%% Compute the accuracy
+[accuracy0,sensitivity0,specificity0,precision0,gmean0,f1score0]=prediction_performance(Y(71:80), yfit);
+ 
+ytrue=Combine_TS(:,end);
 
 %% Apply GNB
 % [classifier] = trainClassifier(X(1:78,:),Y(1:78,1), 'nbayes');   %train classifier
