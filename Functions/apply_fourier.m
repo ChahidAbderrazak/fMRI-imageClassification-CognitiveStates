@@ -6,7 +6,7 @@ Max_X_FT= zeros(size(X,1),1);
 I= zeros(size(X,1),1);
 
 for k=1:size(X,1)
-    X_FT(k,:)= abs(fft(X(k,:)));
+    X_FT(k,:)= angle(fft(X(k,:)));
 end
 X_DC= X_FT(:,1);
 X_FT(:,1)=[];
