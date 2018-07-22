@@ -1,0 +1,28 @@
+for w=1:6
+    switch(w)
+        case 1
+            load('data-starplus-04799-v7.mat')
+            single_subject_classification_final
+            acc= optimize_range(X_P,X_S,Y)
+        case 2
+            load('data-starplus-04820-v7.mat')
+            single_subject_classification_final
+            acc= optimize_range(X_P,X_S,Y)
+        case 3
+            load('data-starplus-04847-v7.mat')
+            single_subject_classification_final
+            optimize_range(w)
+        case 4
+            load('data-starplus-05675-v7.mat')
+            single_subject_classification_final
+            acc= optimize_range(X_P,X_S,Y)
+        case 5
+            load('data-starplus-05680-v7.mat')
+            single_subject_classification_final
+            acc= optimize_range(X_P,X_S,Y);
+        case 6
+            load('data-starplus-05710-v7.mat')
+            single_subject_classification_final
+            acc= optimize_range(X_P,X_S,Y)
+    end
+end
