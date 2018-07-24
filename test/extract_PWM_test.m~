@@ -27,6 +27,8 @@ for i=1:size(X_S,1)
             X_S(i,j)= 1;
         elseif X_S(i,j) <= -1
             X_S(i,j)= 2;
+        elseif X_S(i,j) <= 1
+            X_S(i,j)= 3;
         elseif X_S(i,j) < 3
             X_S(i,j)= 3;
         else 
@@ -124,14 +126,15 @@ if train_or_test == string('test')
                 PWM_P_ex(i,j)= PWM_P(2,j);
                 PWM_P_ex(i+size(X_P,1),j)= PWM_S(2,j);
             elseif X_P(i,j)==3
-                PWM_P_ex(i,j)= PWM_P(3,j);
-                PWM_P_ex(i+size(X_P,1),j)= PWM_S(3,j);
-            elseif X_P(i,j)==4
-                PWM_P_ex(i,j)= PWM_P(4,j);
-                PWM_P_ex(i+size(X_P,1),j)= PWM_S(4,j);
-            elseif X_P(i,j)==5
-                PWM_P_ex(i,j)= PWM_P(5,j);
-                PWM_P_ex(i+size(X_P,1),j)= PWM_S(5,j);
+
+                PWM_S_ex(i,j)= PWM_P(3,j);
+                PWM_S_ex(i+size(X_S,1),j)= PWM_P(3,j);
+            elseif X_S(i,j)==4
+                PWM_S_ex(i,j)= PWM_P(4,j);
+                PWM_S_ex(i+size(X_S,1),j)= PWM_P(4,j);
+            elseif X_S(i,j)==5
+                PWM_S_ex(i,j)= PWM_S(5,j);
+                PWM_S_ex(i+size(X_S,1),j)= PWM_P(5,j);
             end
         end
     end
@@ -144,15 +147,6 @@ if train_or_test == string('test')
             elseif X_S(i,j)==2
                 PWM_S_ex(i,j)= PWM_S(2,j);
                 PWM_S_ex(i+size(X_S,1),j)= PWM_P(2,j);
-            elseif X_S(i,j)==3
-                PWM_S_ex(i,j)= PWM_S(3,j);
-                PWM_S_ex(i+size(X_S,1),j)= PWM_P(3,j);
-            elseif X_S(i,j)==4
-                PWM_S_ex(i,j)= PWM_S(4,j);
-                PWM_S_ex(i+size(X_S,1),j)= PWM_P(4,j);
-            elseif X_S(i,j)==5
-                PWM_S_ex(i,j)= PWM_S(5,j);
-                PWM_S_ex(i+size(X_S,1),j)= PWM_P(5,j);
             end
         end
     end
