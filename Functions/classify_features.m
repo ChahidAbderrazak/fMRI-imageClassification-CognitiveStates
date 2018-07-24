@@ -1,11 +1,12 @@
 clear acc acc1 acc2 X_added 
-for i=1:4
+for i=1:5
 
     switch(i)
         case 1
             [acc1, acc2]= Apply_LeavOut_classification(X, Y);
             acc=[acc1,acc2];
         
+        case 2
         for j=2:5
             switch(j)
 
@@ -42,15 +43,17 @@ for i=1:4
            [acc1, acc2]= Apply_LeavOut_classification(X_wavelet, Y);
            acc(end+1,1:2)=[acc1,acc2];
            
-        case 4
+        case 5
         
          for j=8:12
             switch(j)
 
                 case 8
+                clear X_added
                 X_added=F_featuresA_h1;
 
-                case 9
+                case 9 
+                clear X_added
                 X_added=S_featuresA_h1;
 
                 case 10
@@ -58,6 +61,7 @@ for i=1:4
                 X_added=B_featuresA_h1;
 
                 case 11
+                clear X_added
                 X_added=P_featuresA_h1;
 
                 case 12
