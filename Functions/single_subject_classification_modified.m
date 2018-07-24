@@ -3,8 +3,16 @@ addpath ./Functions
 addpath ./Functions/Netlab
 addpath ./datasets
 addpath /Users/sehrism/Documents/datasets
-load('data-starplus-05675-v7.mat')
+% load('data-starplus-04799-v7.mat')
+% load('data-starplus-04820-v7.mat')
+load('data-starplus-04847-v7.mat')
+% load('data-starplus-05675-v7.mat')
+% load('data-starplus-05680-v7.mat')
+% load('data-starplus-05710-v7.mat')
+
+
 normalization=0;
+normalization_PWM=0;
 trials=find([info.cond]>1); % The trials of S and P 
 
 %% Returns data for specified trials
@@ -12,9 +20,11 @@ trials=find([info.cond]>1); % The trials of S and P
 
 %% Take the average of each ROIs
 
-% [infoAvg,dataAvg,metaAvg] = transformIDM_selectROIVoxels(info0,data0,meta0,{'CALC'});
-
 [infoAvg,dataAvg,metaAvg] = transformIDM_selectROIVoxels(info0,data0,meta0,{'CALC'});
+
+% [infoAvg,dataAvg,metaAvg] = transformIDM_selectActiveVoxels(info0,data0,meta0, 2000);
+
+% [infoAvg,dataAvg,metaAvg] = transformIDM_selectROIVoxels(info0,data0,meta0,{'CALC' 'RIPL'});
 
 %  [infoAvg,dataAvg,metaAvg] = transformIDM_avgROIVoxels(info0,data0,meta0,{'CALC' 'LIPL' 'LT' 'LTRIA' 'LOPER' 'LIPS' 'LDLPFC'});
 
@@ -37,6 +47,21 @@ if normalization==1
     [infoS1,dataS1,metaS1] = transformIDM_normalizeTrials(infoS1,dataS1,metaS1);
     [infoS2,dataS2,metaS2] = transformIDM_normalizeTrials(infoS2,dataS2,metaS2);
 end
+if normalization_PWM==1
+    [infoP1,dataP1_PWM,metaP1] = transformIDM_normalizeTrials(infoP1,dataP1,metaP1);
+    [infoP2,dataP2_PWM,metaP2] = transformIDM_normalizeTrials(infoP2,dataP2,metaP2);
+    [infoS1,dataS1_PWM,metaS1] = transformIDM_normalizeTrials(infoS1,dataS1,metaS1);
+    [infoS2,dataS2_PWM,metaS2] = transformIDM_normalizeTrials(infoS2,dataS2,metaS2);
+    [X_P1_PWM,labelsP1,exInfoP1]=idmToExamples_condLabel(infoP1,dataP1_PWM,metaP1);
+    [X_P2_PWM,labelsP2,exInfoP2]=idmToExamples_condLabel(infoP2,dataP2_PWM,metaP2);
+    [X_S1_PWM,labelsS1,exInfoS1]=idmToExamples_condLabel(infoS1,dataS1_PWM,metaS1);
+    [X_S2_PWM,labelsS2,exInfoS2]=idmToExamples_condLabel(infoS2,dataS2_PWM,metaS2);
+    X_P_PWM=[X_P1_PWM;X_P2_PWM]; %X_P1 is the 1st 8s and X_P2 for 2nd 8s for firstStimulus='P'
+    X_S_PWM=[X_S1_PWM;X_S2_PWM]; %X_S1 is the 1st 8s and X_S2 for 2nd 8s for firstStimulus='S'
+    PWM = extract_PWM(X_P_PWM, X_S_PWM);
+
+end
+
 %% Create X and labels, data is converted to X by concatenating the multiple data rows to one single row
 [X_P1,labelsP1,exInfoP1]=idmToExamples_condLabel(infoP1,dataP1,metaP1);
 [X_P2,labelsP2,exInfoP2]=idmToExamples_condLabel(infoP2,dataP2,metaP2);
@@ -52,14 +77,16 @@ X=[X_P;X_S];
 Y=[labelsP;labelsS];
 
 %% Shuffle data
-[X,Y,shuffledRow] = shuffleRow(X,Y);
+% [X,Y,shuffledRow] = shuffleRow(X,Y);
 
 % X= normalizeTrials(X, "true");
 
 %% PWM
-PWM = extract_PWM(X_P, X_S);
+if normalization_PWM==0
+    PWM = extract_PWM1(X_P, X_S);
+end
 
-[acc1, acc2]= Apply_LeavOut_classification(X, Y);
+% [acc1, acc2]= Apply_LeavOut_classification(X, Y);
 %% Append the DC component and MAX Amplitude of fourier transform to the features
 [X_FT,Max_X_FT,I,X_DC]= apply_fourier(X, string('false'));
 % X(:, size(X,2)+1)= X_DC(:,1);
@@ -79,8 +106,7 @@ addpath /Users/sehrism/Documents/MATLAB/SCSA_SS1_Features_Abderrazak/Functions; 
 
 %% Generate SCSA Based Features
 h=1;gm=0.5;fs=1;
-[F_featuresA_h1, S_featuresA_h1, B_featuresA_h1, P_featuresA_h1,AF_featuresA_h1]=SCSA_Transform_features(X(:,1:112),h,gm,fs);
-% S_featuresA_h1= S_featuresA_h1(:, 1:75);
+[F_featuresA_h1, S_featuresA_h1, B_featuresA_h1, P_featuresA_h1,AF_featuresA_h1]= SCSA_Transform_features(X(:,1:112),h,gm,fs);
 % X= [X F_featuresA_h1];
 % X= [X S_featuresA_h1(:,1:52)]; %Increase the %error
 % X= [X B_featuresA_h1];
@@ -117,10 +143,10 @@ Classify_raw_plus_features
 % ytrue=Combine_TS(:,end);
 
 %% Apply GNB
-% [classifier] = trainClassifier(X(1:78,:),Y(1:78,1), 'nbayes');   %train classifier
-% [predictions] = applyClassifier(X(79:80,:),classifier);       %test it
-% [result,predictedLabels,trace] = summarizePredictions(predictions,classifier,'averageRank',Y(79:80,1));
-% 1-result{1}  % rank accuracy
+[classifier] = trainClassifier(X(1:78,:),Y(1:78,1), 'nbayes');   %train classifier
+[predictions] = applyClassifier(X(79:80,:),classifier);       %test it
+[result,predictedLabels,trace] = summarizePredictions(predictions,classifier,'averageRank',Y(79:80,1));
+1-result{1}  % rank accuracy
 % 
 % %% Apply LR
 % [classifier] = trainClassifier(X,Y,'logisticRegression');   %train classifier
