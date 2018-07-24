@@ -77,7 +77,7 @@ Y=[labelsP;labelsS];
 %% Generate PWM features
 
 if normalization_PWM==0
-    [PWM, PWM_fake] = extract_PWM1(X_P, X_S);
+    PWM = extract_PWM1(X_P(1:39), X_S());
 end
 
 %% *Append the DC component and MAX Amplitude of fourier transform to the features
