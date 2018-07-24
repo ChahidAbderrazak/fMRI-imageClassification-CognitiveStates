@@ -1,4 +1,4 @@
-function [PWM, X_P, X_S] = extract_PWM1(X_P, X_S)
+function [PWM_test,PWM, X_P, X_S] = extract_PWM1(X_P, X_S)
 catogries= 5;
 
 % 
@@ -119,3 +119,9 @@ end
 for i=1:size(PWM_S_ex,1)
     PWM(i,2)=sum(PWM_S_ex(i,:));
 end
+
+PWM_test=zeros(80,2);
+PWM_test(1:40,1)=PWM(1:40,1);
+PWM_test(1:40,2)=PWM(41:80,1);
+PWM_test(41:80,1)=PWM(1:40,2);
+PWM_test(41:80,2)=PWM(41:80,2);
