@@ -18,9 +18,9 @@ for i=1:size(X_P,1)
     for j=1:size(X_P,2)
         if X_P(i,j) <= 0.25
             X_P(i,j)= 1;
-        elseif X_P(i,j) <=0.5
+        elseif X_P(i,j) <= 0.5
             X_P(i,j)= 2;
-        elseif X_P(i,j) <=0.75
+        elseif X_P(i,j) <= 0.75
             X_P(i,j)= 3;
         else 
             X_P(i,j)= 4;
@@ -32,9 +32,9 @@ for i=1:size(X_S,1)
     for j=1:size(X_S,2)
         if X_S(i,j) <= 0.25
             X_S(i,j)= 1;
-        elseif X_S(i,j) <=0.5
+        elseif X_S(i,j) <= 0.5
             X_S(i,j)= 2;
-        elseif X_S(i,j) <=0.75
+        elseif X_S(i,j) <= 0.75
             X_S(i,j)= 3;
         else 
             X_S(i,j)= 4;
