@@ -1,4 +1,4 @@
-function [PWM, X_P, X_S] = Generate_PWM_2(X_P, X_S, t)
+function [PWM_test, X_P, X_S] = Generate_PWM_2(X_P, X_S, t)
 catogries= 5;
 
 % 
@@ -25,7 +25,7 @@ for i=1:size(X_P,1)
             X_P(i,j)= 3;
         elseif X_P(i,j) < a(t+3)
             X_P(i,j)= 4;
-        else
+        elseif X_P(i,j) >= a(t+3)
             X_P(i,j)= 5;
         end
     end
@@ -41,7 +41,7 @@ for i=1:size(X_S,1)
             X_S(i,j)= 3;
         elseif X_S(i,j) < a(t+3)
             X_S(i,j)= 4;
-        else
+        elseif X_S(i,j) > a(t+3)
             X_S(i,j)= 5;
         end
     end
@@ -120,3 +120,9 @@ end
 for i=1:size(PWM_S_ex,1)
     PWM(i,2)=sum(PWM_S_ex(i,:));
 end
+
+PWM_test=zeros(80,2);
+PWM_test(1:40,1)=PWM(1:40,1);
+PWM_test(1:40,2)=PWM(41:80,1);
+PWM_test(41:80,1)=PWM(1:40,2);
+PWM_test(41:80,2)=PWM(41:80,2);
