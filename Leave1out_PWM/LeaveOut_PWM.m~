@@ -4,23 +4,8 @@ addpath ./Leave1out_PWM
 
 
 % global PWM_P PWM_S
-for i=1:size(X(1:40,:),1)
-    for j=1:size(X,2)
-        if X(i,j) <= -1
-            X(i,j)= 1;
-        elseif X(i,j) <= -1
-            X(i,j)= 2;
-        elseif X(i,j) <= 0 %check for -0.6
-            X(i,j)= 3;
-        elseif X(i,j) < 3
-            X(i,j)= 4;
-        else 
-            X(i,j)= 5;
-        end
-    end
-end
 
-for i=41:size(X,1)
+for i=1:size(X,1)
     for j=1:size(X,2)
         if X(i,j) <= -3
             X(i,j)= 1;
@@ -29,9 +14,9 @@ for i=41:size(X,1)
         elseif X(i,j) <= 1
             X(i,j)= 3;
         elseif X(i,j) < 3
-            X(i,j)= 3;
-        else 
             X(i,j)= 4;
+        else 
+            X(i,j)= 5;
         end
     end
 end
@@ -65,28 +50,28 @@ for num_fold = 1:C.NumTestSets
         end
         
         for i=1:size(X_train, 2)
-            PWM_S(1,i)= sum(X_train(41:79, i) == 1)/39;
-            PWM_S(2,i)= sum(X_train(41:79, i) == 2)/39;
-            PWM_S(3,i)= sum(X_train(41:79, i) == 3)/39;
-            PWM_S(4,i)= sum(X_train(41:79, i) == 4)/39;
-            PWM_S(5,i)= sum(X_train(41:79, i) == 5)/39;
+            PWM_S(1,i)= sum(X_train(1:39, i) == 1)/(size(X_train,1)-1);
+            PWM_S(2,i)= sum(X_train(1:39, i) == 2)/(size(X_train,1)-1);
+            PWM_S(3,i)= sum(X_train(1:39, i) == 3)/(size(X_train,1)-1);
+            PWM_S(4,i)= sum(X_train(1:39, i) == 4)/(size(X_train,1)-1);
+            PWM_S(5,i)= sum(X_train(1:39, i) == 5)/(size(X_train,1)-1);
         end
         
     else % the test from a picture sample
         for i=1:size(X_train, 2)
-            PWM_P(1,i)= sum(X_train(1:39, i) == 1)/39;
-            PWM_P(2,i)= sum(X_train(1:39, i) == 2)/39;
-            PWM_P(3,i)= sum(X_train(1:39, i) == 3)/39;
-            PWM_P(4,i)= sum(X_train(1:39, i) == 4)/39;
-            PWM_P(5,i)= sum(X_train(1:39, i) == 5)/39;
+            PWM_P(1,i)= sum(X_train(1:39, i) == 1)/(size(X_train,1)-1);
+            PWM_P(2,i)= sum(X_train(1:39, i) == 2)/(size(X_train,1)-1);
+            PWM_P(3,i)= sum(X_train(1:39, i) == 3)/(size(X_train,1)-1);
+            PWM_P(4,i)= sum(X_train(1:39, i) == 4)/(size(X_train,1)-1);
+            PWM_P(5,i)= sum(X_train(1:39, i) == 5)/(size(X_train,1)-1);
         end
         
         for i=1:size(X_train, 2)
-            PWM_S(1,i)= sum(X_train(40:79, i) == 1)/40;
-            PWM_S(2,i)= sum(X_train(40:79, i) == 2)/40;
-            PWM_S(3,i)= sum(X_train(40:79, i) == 3)/40;
-            PWM_S(4,i)= sum(X_train(40:79, i) == 4)/40;
-            PWM_S(5,i)= sum(X_train(40:79, i) == 5)/40;
+            PWM_S(1,i)= sum(X_train(1:40, i) == 1)/size(X_train,1);
+            PWM_S(2,i)= sum(X_train(1:40, i) == 2)/size(X_train,1);
+            PWM_S(3,i)= sum(X_train(1:40, i) == 3)/size(X_train,1);
+            PWM_S(4,i)= sum(X_train(1:40, i) == 4)/size(X_train,1);
+            PWM_S(5,i)= sum(X_train(1:40, i) == 5)/size(X_train,1);
         end 
     end
     
@@ -274,3 +259,4 @@ for num_fold = 1:C.NumTestSets
 end
 
 acc= sum(acc1)/sum(C.TestSize);
+
