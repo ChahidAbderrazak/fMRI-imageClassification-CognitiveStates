@@ -1,14 +1,31 @@
 C = cvpartition(Y(1:40), 'LeaveOut');
-PWM=[];
+PWM_train=[];
+PWM_test=[];
+y=[];
+Y_P= Y(1:40);
+Y_S= Y(41:80);
+
 for i = 1:C.NumTestSets
     trIdx = C.training(i);
     teIdx = C.test(i);
-    PWM1= extract_PWM_test(X_P(trIdx,:), X_S(trIdx,:));
-    PWM= [PWM PWM1];
-%     PWM= cat(2,PWM(:,i:i+1));
+    PWM1_train= extract_PWM_test(X_P(trIdx,:), X_S(trIdx,:), 'train');
+    PWM1_test= extract_PWM_test(X_P(teIdx,:), X_S(teIdx,:), 'test');
+    PWM_train= [PWM_train PWM1_train];
+    PWM_test=[PWM_test PWM1_test];
+    Y_train_X_P= Y_P(trIdx);
+    Y_test_X_P= Y_P(teIdx);
+    Y_train_X_S= Y_S(trIdx);
+    Y_test_X_S= Y_S(teIdx);
+    
+    Y_train=[Y_train_X_P; Y_train_X_S];
+    Y_test=[Y_test_X_P; Y_test_X_S];
+    
+    Y_train_test= [Y_train; Y_test];
+    y= [y Y_train_test];
 end
+PWM= [PWM_train; PWM_test];
 
-
+acc1= Apply_LeavOut_classification_test(PWM, y);
 
 % 
 % X_P_1_1= X_P_1(40,:);
