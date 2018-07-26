@@ -8,5 +8,6 @@ addpath ./test
 
 load('data-starplus-04799-v7.mat')
 single_subject_classification_test
-acc1= LeaveOut_PWM(X,Y);
-
+[PWM, acc, outcome]= Classify_LeaveOut_PWM(X,Y);
+% acc = Old_LeaveOut_PWM(X,Y);
+% [acc,outcome]= Generate_PWM(X,Y);
