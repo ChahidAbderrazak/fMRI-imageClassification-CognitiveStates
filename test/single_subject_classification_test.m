@@ -1,8 +1,8 @@
-clear all
+% clear all
 addpath ./Functions
 addpath ./Functions/Netlab
 addpath ./datasets
-addpath /Users/sehrism/Documents/datasets
+% addpath /Users/sehrism/Documents/datasets
 % addpath ./classification_with_independent_PWM_test_feature
 addpath ./test
 
@@ -11,7 +11,7 @@ addpath ./test
 % load('data-starplus-04847-v7.mat')
 % load('data-starplus-05675-v7.mat')
 % load('data-starplus-05680-v7.mat')
-load('data-starplus-05710-v7.mat')
+% load('data-starplus-05710-v7.mat')
 
 normalization=0; % *Normalize each trial
 normalization_PWM=0; % *Normalize the input to PWM

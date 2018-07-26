@@ -2,14 +2,14 @@ function [PWM, acc, outcome] = Classify_LeaveOut_PWM_functions(X,Y)
 addpath ./Leave1out_PWM
 
 % global PWM_P PWM_S
-catogries= 5;
+catogries= 4;
 
 C = cvpartition(Y, 'LeaveOut');
 intervals1= [-2 -1 0 1];
 intervals2= [-2 -1 0 1];
 
 for num_fold = 1:C.NumTestSets
-    clearvars -except X Y catogries PWM_P PWM_S D1 D2 acc1 acc2 num_fold C outcome1 outcome2
+    clearvars -except X Y catogries PWM_P PWM_S intervals1 intervals2 acc1 acc2 num_fold C outcome1 outcome2
     
     trIdx = C.training(num_fold);
     teIdx = C.test(num_fold);
@@ -29,7 +29,7 @@ for num_fold = 1:C.NumTestSets
     PWM_S = Generate_PWM_matrix(Xs, intervals2);
 
     X_train_levels=[Xp;Xs];
-    Y_train=[ones(1,size(Xp),1); 2*ones(1,size(Xs),1)];
+    Y_train=[ones(size(Xp,1),1); 2*ones(size(Xs,1),1)];
     PWM_f_train= Generate_PWM_features(X_train_levels, PWM_P, PWM_S);
 
     X_test_P = Generate_PWM_S(X_test, D1);
