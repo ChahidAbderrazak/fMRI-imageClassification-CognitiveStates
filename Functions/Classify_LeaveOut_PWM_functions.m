@@ -3,12 +3,17 @@ addpath ./Leave1out_PWM
 
 % global PWM_P PWM_S
 catogries1= [1 2 3 4 5];
-catogries2= [1 2 3 4];
-PWM_t=[];
+catogries2= [1 2 3 4 5];
+
+% catogries2= [1 2 3 3 4];
 
 C = cvpartition(Y, 'LeaveOut');
-intervals1= [-1 -1 -0.6 1 3];
-intervals2= [-1 -1 0.6 3];
+intervals1= [-2 -1 0 3.5];
+intervals2= [-2 -1 0 3.5];
+
+% intervals1= [-1 -1 -0.6 3 ];
+% intervals2= [-3 -1 1 3];
+
 for num_fold = 1:C.NumTestSets
     clearvars -except X Y catogries1 catogries2 PWM_P PWM_S intervals1 intervals2 acc1 acc2 num_fold C outcome1 outcome2 outcome classPrior
     
@@ -26,14 +31,14 @@ for num_fold = 1:C.NumTestSets
     Xp= mapping_levels(Xp,intervals1, catogries1);
     Xs= mapping_levels(Xs,intervals2, catogries2);
     
-    PWM_P = Generate_PWM_matrix(Xp, intervals1);
-    PWM_S = Generate_PWM_matrix(Xs, intervals2);
+    PWM_P = Generate_PWM_matrix(Xp, catogries1);
+    PWM_S = Generate_PWM_matrix(Xs, catogries2);
     
     X_train_levels=[Xp;Xs];
     Y_train=[ones(size(Xp,1),1); 2*ones(size(Xs,1),1)];
     PWM_f_train= Generate_PWM_features(X_train_levels, PWM_P, PWM_S);
-    X_test_P= Map_test_intervals1(X_test, intervals1);
-    X_test_S= Map_test_intervals2(X_test, intervals2);
+    X_test_P= mapping_levels(X_test, intervals1, catogries1);
+    X_test_S= mapping_levels(X_test, intervals2, catogries2);
     
     %     [PWM_f1, PWM_f2]= Generate_PWM_test(X_test, PWM_P,PWM_S);
     %% Train and test the model
@@ -54,8 +59,8 @@ for num_fold = 1:C.NumTestSets
     PWM_fP_test= Generate_PWM_test(X_test_P, PWM_P, PWM_S);
     [predictions1] = applyClassifier(PWM_fP_test, classifier);       %test it
     [result1,predictedLabels1,trace1] = summarizePredictions(predictions1,classifier,'averageRank',Y_test);
-    global classPrior
     acc1(num_fold)= 1-result1{1};  % rank accuracy
+    global classPrior
     outcome1(num_fold,:)=[Y_test  acc1(num_fold) classPrior];
     
     
@@ -111,13 +116,13 @@ elseif size(catogries,2) ==5
 end
 end
 
-function PWM_matrix= Generate_PWM_matrix(X_train, intervals)
-catogries=size(intervals,2);
+function PWM_matrix= Generate_PWM_matrix(X_train, catogries)
+catogries=size(catogries,2);
 PWM_matrix= zeros(5, size(X_train,2)); %The weight matrix of picture
 
 for k=1:catogries
     for i=1:size(X_train, 2)
-        PWM_matrix(k,i)= sum(X_train(:, i) == k)/40;
+        PWM_matrix(k,i)= sum(X_train(:, i) == k)/size(X_train,1);
     end
 end
 
@@ -144,39 +149,54 @@ PWM_features=[f1 f2];
 
 end
 
-function X_test= Map_test_intervals1(X_test, intervals)
-for j=1:size(X_test,2)
-    if X_test(:,j) <= intervals(1)
-        X_test(:,j)= 1;
-    elseif X_test(:,j) <= intervals(2)
-        X_test(:,j)= 2;
-    elseif X_test(:,j) <= intervals(3)
-        X_test(:,j)= 3;
-    elseif X_test(:,j) < intervals(4)
-        X_test(:,j)= 4;
-    else
-        X_test(:,j)= 5;
-    end
-end
-
-
-end
-function X_test= Map_test_intervals2(X_test, intervals)
-for j=1:size(X_test,2)
-    if X_test(:,j) <= intervals(1)
-        X_test(:,j)= 1;
-    elseif X_test(:,j) <= intervals(2)
-        X_test(:,j)= 2;
-    elseif X_test(:,j) <= intervals(3)
-        X_test(:,j)= 3;
-    elseif X_test(:,j) < intervals(4)
-        X_test(:,j)= 3;
-    else
-        X_test(:,j)= 4;
-    end
-end
-end
-
+% function X_test= Map_test_intervals1(X_test, intervals, catogries)
+% 
+% for j=1:size(X_test,2)
+%     if X_test(:,j) <= intervals(1)
+%         X_test(:,j)= catogries(1);
+%     elseif X_test(:,j) <= intervals(2)
+%         X_test(:,j)= catogries(2);
+%     elseif X_test(:,j) <= intervals(3)
+%         X_test(:,j)= catogries(3);
+%     elseif X_test(:,j) < intervals(4)
+%         X_test(:,j)= catogries(4);
+%     else
+%         X_test(:,j)= catogries(4)+1;
+%     end
+% end
+% 
+% for j=1:size(X_test,2)
+%     if X_test(:,j) <= intervals(1)
+%         X_test(:,j)= catogries(1);
+%     elseif X_test(:,j) <= intervals(2)
+%         X_test(:,j)= catogries(2);
+%     elseif X_test(:,j) <= intervals(3)
+%         X_test(:,j)= catogries(3);
+%     elseif X_test(:,j) < intervals(4)
+%         X_test(:,j)= catogries(4);
+%     else
+%         X_test(:,j)= catogries(4)+1;
+%     end
+% end
+% 
+% 
+% end
+% function X_test= Map_test_intervals2(X_test, intervals)
+% for j=1:size(X_test,2)
+%     if X_test(:,j) <= intervals(1)
+%         X_test(:,j)= 1;
+%     elseif X_test(:,j) <= intervals(2)
+%         X_test(:,j)= 2;
+%     elseif X_test(:,j) <= intervals(3)
+%         X_test(:,j)= 3;
+%     elseif X_test(:,j) < intervals(4)
+%         X_test(:,j)= 3;
+%     else
+%         X_test(:,j)= 4;
+%     end
+% end
+% end
+% 
 function X_PWM_test= Generate_PWM_test(X_test, PWM_P,PWM_S)
 PWM_f1= zeros(size(X_test,1),size(X_test,2));
 PWM_f2= zeros(size(X_test,1),size(X_test,2));
