@@ -34,7 +34,7 @@
 
 
 function [scores] = applyClassifier( varargin )
-global scores
+global classPrior
 %
 % Process parameters
 % 
