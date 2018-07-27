@@ -10,7 +10,7 @@ C = cvpartition(Y, 'LeaveOut');
 intervals1= [-1 -1 -0.6 1 3];
 intervals2= [-1 -1 0.6 3];
 for num_fold = 1:C.NumTestSets
-    clearvars -except X Y catogries1 catogries2 PWM_P PWM_S intervals2 intervals2 acc1 acc2 num_fold C outcome1 outcome2 outcome
+    clearvars -except X Y catogries1 catogries2 PWM_P PWM_S intervals1 intervals2 acc1 acc2 num_fold C outcome1 outcome2 outcome classPrior
     
     trIdx = C.training(num_fold);
     teIdx = C.test(num_fold);
@@ -23,16 +23,16 @@ for num_fold = 1:C.NumTestSets
     Xp=X_train(Y_train==1,:);   Np=size(Xp, 1);
     Xs=X_train(Y_train==2,:);   Ns=size(Xs, 1);
     
-    Xp= mapping_levels(Xp,intervals2, catogries2);
+    Xp= mapping_levels(Xp,intervals1, catogries1);
     Xs= mapping_levels(Xs,intervals2, catogries2);
     
-    PWM_P = Generate_PWM_matrix(Xp, intervals2);
+    PWM_P = Generate_PWM_matrix(Xp, intervals1);
     PWM_S = Generate_PWM_matrix(Xs, intervals2);
     
     X_train_levels=[Xp;Xs];
     Y_train=[ones(size(Xp,1),1); 2*ones(size(Xs,1),1)];
     PWM_f_train= Generate_PWM_features(X_train_levels, PWM_P, PWM_S);
-    X_test_P= Map_test_intervals2(X_test, intervals2);
+    X_test_P= Map_test_intervals1(X_test, intervals1);
     X_test_S= Map_test_intervals2(X_test, intervals2);
     
     %     [PWM_f1, PWM_f2]= Generate_PWM_test(X_test, PWM_P,PWM_S);
@@ -49,8 +49,6 @@ for num_fold = 1:C.NumTestSets
     %     [predictions] = applyClassifier(PWM_test, classifier);       %test it
     %     [result,predictedLabels,trace] = summarizePredictions(predictions,classifier,'averageRank',Y_test);
     %     acc1(num_fold)= 1-result{1};  % rank accuracy
-    
-    
     
     %% Test1 the model
     PWM_fP_test= Generate_PWM_test(X_test_P, PWM_P, PWM_S);

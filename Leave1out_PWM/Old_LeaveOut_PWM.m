@@ -6,21 +6,22 @@ addpath ./Leave1out_PWM
 % global PWM_P PWM_S
 %% Replace each value in X by its category
 % 
-% for i=1:size(X(1:40,:),1)
-%     for j=1:size(X,2)
-%         if X(i,j) <= -3
-%             X(i,j)= 1;
-%         elseif X(i,j) <= -1
-%             X(i,j)= 2;
-%         elseif X(i,j) <= 1
-%             X(i,j)= 3;
-%         elseif X(i,j) < 3
-%             X(i,j)= 4;
-%         else 
-%             X(i,j)= 5;
-%         end
-%     end
-% end
+for i=1:size(X,1)
+    for j=1:size(X,2)
+        if X(i,j) <= -2
+            X(i,j)= 1;
+        elseif X(i,j) <= -1
+            X(i,j)= 2;
+        elseif X(i,j) <= 0
+            X(i,j)= 3;
+        elseif X(i,j) < 3.5
+            X(i,j)= 4;
+        else 
+            X(i,j)= 5;
+        end
+    end
+end
+
 % 
 % for i=41:size(X,1)
 %     for j=1:size(X,2)
@@ -39,37 +40,37 @@ addpath ./Leave1out_PWM
 % end
 % 
 
-for i=1:size(X(1:40,:),1)
-    for j=1:size(X,2)
-        if X(i,j) <= -1
-            X(i,j)= 1;
-        elseif X(i,j) <= -1
-            X(i,j)= 2;
-        elseif X(i,j) <= -0.6
-            X(i,j)= 3;
-        elseif X(i,j) < 3
-            X(i,j)= 4;
-        else 
-            X(i,j)= 5;
-        end
-    end
-end
-
-for i=41:size(X,1)
-    for j=1:size(X,2)
-        if X(i,j) <= -3
-            X(i,j)= 1;
-        elseif X(i,j) <= -1
-            X(i,j)= 2;
-        elseif X(i,j) <= 1
-            X(i,j)= 3;
-        elseif X(i,j) < 3
-            X(i,j)= 3;
-        else 
-            X(i,j)= 4;
-        end
-    end
-end
+% for i=1:size(X(1:40,:),1)
+%     for j=1:size(X,2)
+%         if X(i,j) <= -1
+%             X(i,j)= 1;
+%         elseif X(i,j) <= -1
+%             X(i,j)= 2;
+%         elseif X(i,j) <= -0.6
+%             X(i,j)= 3;
+%         elseif X(i,j) < 3
+%             X(i,j)= 4;
+%         else 
+%             X(i,j)= 5;
+%         end
+%     end
+% end
+% 
+% for i=41:size(X,1)
+%     for j=1:size(X,2)
+%         if X(i,j) <= -3
+%             X(i,j)= 1;
+%         elseif X(i,j) <= -1
+%             X(i,j)= 2;
+%         elseif X(i,j) <= 1
+%             X(i,j)= 3;
+%         elseif X(i,j) < 3
+%             X(i,j)= 3;
+%         else 
+%             X(i,j)= 4;
+%         end
+%     end
+% end
 
 
 
