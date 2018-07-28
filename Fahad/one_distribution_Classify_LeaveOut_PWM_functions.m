@@ -2,15 +2,16 @@ function [outcome, accuracy1, accuracy2]= one_distribution_Classify_LeaveOut_PWM
 addpath ./Leave1out_PWM
 
 % global PWM_P PWM_S
-catogries1= [1 2 3 4 5];
-catogries2= [1 2 3 4 5];
+
+catogries1= [1 2 3 4 5 6];
+catogries2= [1 2 3 4 5 6];
 
 % catogries2= [1 2 3 3 4];
 
 C = cvpartition(Y, 'LeaveOut');
 
-intervals1= [-2 -1 0 3];
-intervals2= [-2 -1 0 3];
+intervals1= [-8 -1 2 5 8];
+intervals2= [-8 -1 2 5 8];
 
 % intervals1= [-2 -1 0 3.5];% acc=[1 0.5625 1 1 0.5 1]
 % intervals2= [-2 -1 0 3.5];
@@ -117,7 +118,26 @@ elseif size(catogries,2) ==5
             end
         end
     end
+elseif size(catogries,2) ==6
+    for i=1:size(X,1)
+        for j=1:size(X,2)
+            if X(i,j) <= intervals(1)
+                X(i,j)= catogries(1);
+            elseif X(i,j) <= intervals(2)
+                X(i,j)= catogries(2);
+            elseif X(i,j) <= intervals(3)
+                X(i,j)= catogries(3);
+            elseif X(i,j) <= intervals(4)
+                X(i,j)= catogries(4);
+            elseif X(i,j) <= intervals(5)
+                X(i,j)= catogries(5);
+            else
+                X(i,j)= catogries(6);
+            end
+        end
+    end
 end
+
 end
 
 function PWM_matrix= Generate_PWM_matrix(X_train, catogries)
