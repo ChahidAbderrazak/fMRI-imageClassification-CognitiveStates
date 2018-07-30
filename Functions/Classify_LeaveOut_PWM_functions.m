@@ -1,31 +1,31 @@
-function [outcome, accuracy1, accuracy2]= Classify_LeaveOut_PWM_functions(X,Y)
+function [outcome, accuracy1]= Classify_LeaveOut_PWM_functions(X,Y)
 addpath ./Leave1out_PWM
 
 % global PWM_P PWM_S
 catogries1= [1 2 3 4 5 6];
-catogries2= [1 2 3 4 5 6];
 
-% catogries2= [1 2 3 3 4];
-
-C = cvpartition(Y, 'LeaveOut');
 
 intervals1= [-8 -1 2 5 8];
-intervals2= [-8 -1 2 5 8];
 
 % intervals1= [-2 -1 0 3.5];% acc=[1 0.5625 1 1 0.5 1]
-% intervals2= [-2 -1 0 3.5];
+% intervals1= [-2 -1 0 3.5];
 
 % intervals1= [-1 -1 -0.6 3 ];
-% intervals2= [-3 -1 1 3];
+% intervals1= [-3 -1 1 3];
+
+
+%% Leave one sample Out Cross-Validation
+C = cvpartition(Y, 'LeaveOut');
 
 for num_fold = 1:C.NumTestSets
-    clearvars -except X Y catogries1 catogries2 PWM_P PWM_S intervals1 intervals2 acc1 acc2 num_fold C outcome1 outcome2 outcome classPrior
+    clearvars -except X Y catogries1 catogries1 PWM_P PWM_S intervals1 intervals1 acc1 acc2 num_fold C outcome outcome2 outcome classPrior
     
     trIdx = C.training(num_fold);
     teIdx = C.test(num_fold);
     Idx= find(teIdx);
     X_train= X(trIdx,:);
     X_test= X(teIdx,:);
+    
     Y_train= Y(trIdx);
     Y_test= Y(teIdx);
     
@@ -33,51 +33,31 @@ for num_fold = 1:C.NumTestSets
     Xs=X_train(Y_train==2,:);   Ns=size(Xs, 1);
     
     Xp= mapping_levels(Xp,intervals1, catogries1);
-    Xs= mapping_levels(Xs,intervals2, catogries2);
+    Xs= mapping_levels(Xs,intervals1, catogries1);
     
     PWM_P = Generate_PWM_matrix(Xp, catogries1);
-    PWM_S = Generate_PWM_matrix(Xs, catogries2);
+    PWM_S = Generate_PWM_matrix(Xs, catogries1);
     
     X_train_levels=[Xp;Xs];
-    Y_train=[ones(size(Xp,1),1); 2*ones(size(Xs,1),1)];
     PWM_f_train= Generate_PWM_features(X_train_levels, PWM_P, PWM_S);
-    X_test_P= mapping_levels(X_test, intervals1, catogries1);
-    X_test_S= mapping_levels(X_test, intervals2, catogries2);
     
-    %     [PWM_f1, PWM_f2]= Generate_PWM_test(X_test, PWM_P,PWM_S);
+    X_test_levels= mapping_levels(X_test, intervals1, catogries1);
+    PWM_fP_test= Generate_PWM_features(X_test_levels, PWM_P, PWM_S);
+
+    
     %% Train and test the model
-    [classifier] = trainClassifier(PWM_f_train,Y_train, 'logisticRegression');   %train classifier
-    
+    [classifier] = trainClassifier(PWM_f_train,Y_train, 'logisticRegression', {0.01 0.001 10});   %train classifier
+ 
     %% Test1 the model
-%     if Y_test==1
-%         PWM_test= Generate_PWM_test(X_test_P, PWM_P,PWM_S);
-%     else
-%         PWM_test= Generate_PWM_test(X_test_S, PWM_P, PWM_S);
-%     end
-%     [predictions] = applyClassifier(PWM_test, classifier);       %test it
-%     [result,predictedLabels,trace] = summarizePredictions(predictions,classifier,'averageRank',Y_test);
-%     acc1(num_fold)= 1-result{1};  % rank accuracy
-    
-    %% Test1 the model
-    PWM_fP_test= Generate_PWM_test(X_test_P, PWM_P, PWM_S);
     [predictions1] = applyClassifier(PWM_fP_test, classifier);       %test it
     [result1,predictedLabels1,trace1] = summarizePredictions(predictions1,classifier,'averageRank',Y_test);
     acc1(num_fold)= 1-result1{1};  % rank accuracy
     global scores
-    outcome1(num_fold,:)=[Y_test  acc1(num_fold) scores];
-    
-    
-    %% Test2 the model
-    PWM_fS_test= Generate_PWM_test(X_test_S, PWM_P, PWM_S);
-    [predictions2] = applyClassifier(PWM_fS_test, classifier);       %test it
-    [result2,predictedLabels2,trace2] = summarizePredictions(predictions2,classifier,'averageRank',Y_test);
-    acc2(num_fold)= 1-result2{1};  % rank accuracy
-    outcome2(num_fold,:)=[Y_test  acc2(num_fold) scores];
+    outcome(num_fold,:)=[Y_test  acc1(num_fold) scores];
 end
-% acc= sum(acc1)/sum(C.TestSize);
-outcome= [outcome1, outcome2];
+
+%% Average Accuracy 
 accuracy1= sum(acc1)/sum(C.TestSize);
-accuracy2= sum(acc2)/sum(C.TestSize);
 
 end
 
@@ -170,19 +150,3 @@ PWM_features=[f1 f2];
 
 end
 
-function X_PWM_test= Generate_PWM_test(X_test, PWM_P,PWM_S)
-PWM_f1= zeros(size(X_test,1),size(X_test,2));
-PWM_f2= zeros(size(X_test,1),size(X_test,2));
-
-for j=1:size(X_test,2)
-    pwm_idx=X_test(:,j);
-    PWM_f1(:,j)= PWM_P(pwm_idx,j);
-    PWM_f2(:,j)= PWM_S(pwm_idx,j);
-end
-
-%sum the test(sentence) columns to obtain the PWM feature
-f1= sum(PWM_f1(1,:)); %+ve
-f2= sum(PWM_f2(1,:)); %-ve
-
-X_PWM_test= [f1 f2];
-end
