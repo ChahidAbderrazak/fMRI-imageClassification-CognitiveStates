@@ -1,0 +1,159 @@
+function [accuracy1 acc1]= SVM_Classify_LeaveOut_PWM_functions(X,Y)
+addpath ./Leave1out_PWM
+
+% global PWM_P PWM_S
+catogries1= [1 2 3 4 5 6];
+
+
+intervals1= [-8 -1 2 5 8];
+
+% intervals1= [-2 -1 0 3.5];% acc=[1 0.5625 1 1 0.5 1]
+% intervals1= [-2 -1 0 3.5];
+
+% intervals1= [-1 -1 -0.6 3 ];
+% intervals1= [-3 -1 1 3];
+
+
+%% Leave one sample Out Cross-Validation
+C = cvpartition(Y, 'LeaveOut');
+
+for num_fold = 1:C.NumTestSets
+    clearvars -except X Y catogries1 catogries1 PWM_P PWM_S intervals1 intervals1 acc1 acc2 num_fold C outcome outcome2 outcome classPrior
+    
+    trIdx = C.training(num_fold);
+    teIdx = C.test(num_fold);
+    Idx= find(teIdx);
+    X_train= X(trIdx,:);
+    X_test= X(teIdx,:);
+    
+    Y_train= Y(trIdx);
+    Y_test= Y(teIdx);
+    
+    Xp=X_train(Y_train==0,:);   Np=size(Xp, 1);
+    Xs=X_train(Y_train==1,:);   Ns=size(Xs, 1);
+    
+    Xp= mapping_levels(Xp,intervals1, catogries1);
+    Xs= mapping_levels(Xs,intervals1, catogries1);
+    
+    PWM_P = Generate_PWM_matrix(Xp, catogries1);
+    PWM_S = Generate_PWM_matrix(Xs, catogries1);
+    
+    X_train_levels=[Xp;Xs];
+    PWM_f_train= Generate_PWM_features(X_train_levels, PWM_P, PWM_S);
+    
+    X_test_levels= mapping_levels(X_test, intervals1, catogries1);
+    PWM_fP_test= Generate_PWM_features(X_test_levels, PWM_P, PWM_S);
+    
+    opts = struct('Optimizer','bayesopt','ShowPlots',true,...
+        'AcquisitionFunctionName','expected-improvement-plus');
+%     opts = struct('Optimizer','bayesopt','ShowPlots',false,...
+%         'AcquisitionFunctionName','expected-improvement-plus');
+
+    SVMModel = fitcsvm(PWM_f_train,Y_train,'KernelFunction','rbf',...
+    'OptimizeHyperparameters','auto','HyperparameterOptimizationOptions',opts);
+    [label,score] = predict(SVMModel,PWM_fP_test);
+     acc1(num_fold)= double(label == Y_test) * 100;
+%     sv = SVMModel.SupportVectors;
+%     figure
+%     gscatter(PWM_f_train(:,1),PWM_f_train(:,2),Y_train)
+%     hold on
+%     plot(sv(:,1),sv(:,2),'ko','MarkerSize',10)
+%     legend('Picture','Sentence','Support Vector')
+%     hold off
+% 
+
+end
+
+%% Average Accuracy 
+accuracy1= sum(acc1)/sum(C.TestSize);
+
+end
+
+%% Funtions
+
+function X=mapping_levels(X,intervals, catogries)
+
+if size(catogries,2) ==4
+    for i=1:size(X,1)
+        for j=1:size(X,2)
+            if X(i,j) <= intervals(1)
+                X(i,j)= catogries(1);
+            elseif X(i,j) <= intervals(2)
+                X(i,j)= catogries(2);
+            elseif X(i,j) <= intervals(3)
+                X(i,j)= catogries(3);
+            else
+                X(i,j)= catogries(4);
+            end
+        end
+    end
+
+elseif size(catogries,2) ==5
+    for i=1:size(X,1)
+        for j=1:size(X,2)
+            if X(i,j) <= intervals(1)
+                X(i,j)= catogries(1);
+            elseif X(i,j) <= intervals(2)
+                X(i,j)= catogries(2);
+            elseif X(i,j) <= intervals(3)
+                X(i,j)= catogries(3);
+            elseif X(i,j) <= intervals(4)
+                X(i,j)= catogries(4);
+            else
+                X(i,j)= catogries(5);
+            end
+        end
+    end
+elseif size(catogries,2) ==6
+    for i=1:size(X,1)
+        for j=1:size(X,2)
+            if X(i,j) <= intervals(1)
+                X(i,j)= catogries(1);
+            elseif X(i,j) <= intervals(2)
+                X(i,j)= catogries(2);
+            elseif X(i,j) <= intervals(3)
+                X(i,j)= catogries(3);
+            elseif X(i,j) <= intervals(4)
+                X(i,j)= catogries(4);
+            elseif X(i,j) <= intervals(5)
+                X(i,j)= catogries(5);
+            else
+                X(i,j)= catogries(6);
+            end
+        end
+    end
+end
+end
+
+function PWM_matrix= Generate_PWM_matrix(X_train, catogries)
+catogries=size(catogries,2);
+PWM_matrix= zeros(5, size(X_train,2)); %The weight matrix of picture
+
+for k=1:catogries
+    for i=1:size(X_train, 2)
+        PWM_matrix(k,i)= sum(X_train(:, i) == k)/size(X_train,1);
+    end
+end
+
+
+end
+
+function PWM_features= Generate_PWM_features(X_train, PWM_P, PWM_S)
+    
+PWM_f1= zeros(size(X_train,1), size(X_train,2));
+PWM_f2= zeros(size(X_train,1), size(X_train,2));
+
+
+for i=1:size(X_train,1)
+    for j=1:size(X_train,2)
+        pwm_idx=X_train(i,j);
+        PWM_f1(i,j)= PWM_P(pwm_idx,j);
+        PWM_f2(i,j)= PWM_S(pwm_idx,j);
+    end
+end
+
+f1=sum(PWM_f1,2);
+f2=sum(PWM_f2,2);
+PWM_features=[f1 f2];
+
+end
