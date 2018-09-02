@@ -1,11 +1,22 @@
-function [outcome, accuracy1]= Classify_LeaveOut_PWM_functions(X,Y)
+function [outcome, accuracy1, PWM_P, PWM_S]= Classify_LeaveOut_PWM_functions(X,Y)
 addpath ./Leave1out_PWM
 
 % global PWM_P PWM_S
 catogries1= [1 2 3 4 5 6];
 
+% intervals1= [-8 -1 2 5 8]+1.5;
 
-intervals1= [-8 -1 2 5 8];
+% intervals1= [-8 -1 2 5 8];
+mu=0;sigma0=2.68;
+intervals1= mu+sigma0*[-2 -1 0 1 2]; % 1 1 1 1  0.9875 1
+% intervals1= mu+(1.1*sigma0)*[-2 -1 0 1 2]; % 1 1 1 1  1 1
+% intervals1= mu+(1.2*sigma0)*[-2 -1 0 1 2]; % 1 1 1 1  1 1
+% intervals1= mu+(1.3*sigma0)*[-2 -1 0 1 2]; % 1 1 1 1  1 1
+% intervals1= mu+(1.4*sigma0)*[-2 -1 0 1 2]; % 1 1 1 0.5  1 1
+% intervals1= mu+(1.5*sigma0)*[-2 -1 0 1 2]; % 1 1 1 0.5  1 1
+%  intervals1= mu+(2*sigma0)*[-2 -1 0 1 2]; % 1 0.5 1 0.5  1 1
+%  intervals1= mu+(2.5*sigma0)*[-2 -1 0 1 2]; % 1 0.5 1 0.5  1 1
+%  intervals1= mu+(5*sigma0)*[-2 -1 0 1 2]; % 1 0.5 1 0.5  1 1
 
 % intervals1= [-2 -1 0 3.5];% acc=[1 0.5625 1 1 0.5 1]
 % intervals1= [-2 -1 0 3.5];
@@ -46,7 +57,7 @@ for num_fold = 1:C.NumTestSets
 
     
     %% Train and test the model
-    [classifier] = trainClassifier(PWM_f_train,Y_train, 'logisticRegression', {0.01 0.001 10});   %train classifier
+    [classifier] = trainClassifier(PWM_f_train,Y_train, 'logisticRegression');   %train classifier
  
     %% Test1 the model
     [predictions1] = applyClassifier(PWM_fP_test, classifier);       %test it
