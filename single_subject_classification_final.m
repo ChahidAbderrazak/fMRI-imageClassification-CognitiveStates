@@ -2,7 +2,7 @@ clear all
 addpath ./Functions
 addpath ./Functions/Netlab
 addpath ./datasets
-addpath /Users/sehrism/Documents/datasets
+% addpath /Users/sehrism/Documents/datasets
 
 load('data-starplus-04799-v7.mat')
 % load('data-starplus-04820-v7.mat')
@@ -20,7 +20,8 @@ trials=find([info.cond]>1); % The trials of S and P
 
 %% Select the voxels belong to the specified ROIs
 
-[infoAvg,dataAvg,metaAvg] = transformIDM_selectROIVoxels(info0,data0,meta0,{'CALC'});
+% [infoAvg,dataAvg,metaAvg] = transformIDM_selectROIVoxels(info0,data0,meta0,{'CALC'});
+ [infoAvg,dataAvg,metaAvg] = transformIDM_avgROIVoxels(info0,data0,meta0,{'CALC' 'LIPL' 'LT' 'LTRIA' 'LOPER' 'LIPS' 'LDLPFC'});
 
 
 % 'CALC' 'LIPL' 'LT' 'LTRIA' 'LOPER' 'LIPS' 'LDLPFC'
@@ -116,4 +117,4 @@ for i=1:size(X,1)
 end
 
 % classify_features
-% Classify_raw_plus_features % *
+Classify_raw_plus_features % *

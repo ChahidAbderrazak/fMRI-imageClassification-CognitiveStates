@@ -22,14 +22,14 @@ trials=find([info.cond]>1); % The trials of S and P
 
 %% Select the voxels belong to the specified ROIs
 
-[infoAvg,dataAvg,metaAvg] = transformIDM_selectROIVoxels(info0,data0,meta0,{'CALC'});
+[info1,data1,meta1] = transformIDM_selectROIVoxels(info0,data0,meta0,{'CALC'});
 
 
 % 'CALC' 'LIPL' 'LT' 'LTRIA' 'LOPER' 'LIPS' 'LDLPFC'
 
 %% Returns data for specified firstStimulus
-[infoP,dataP,metaP]=transformIDM_selectTrials(infoAvg,dataAvg,metaAvg,find([infoAvg.firstStimulus]=='P'));
-[infoS,dataS,metaS]=transformIDM_selectTrials(infoAvg,dataAvg,metaAvg,find([infoAvg.firstStimulus]=='S'));
+[infoP,dataP,metaP]=transformIDM_selectTrials(info1,data1,meta1,find([info1.firstStimulus]=='P'));
+[infoS,dataS,metaS]=transformIDM_selectTrials(info1,data1,meta1,find([info1.firstStimulus]=='S'));
 
 %% Returns IDM for the 1st 8 seconds 
 [infoP1,dataP1,metaP1]=transformIDM_selectTimewindow(infoP,dataP,metaP,[1:16]);
