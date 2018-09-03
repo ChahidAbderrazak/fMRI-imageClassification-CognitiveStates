@@ -1,7 +1,7 @@
-function [outcome, accuracy1, PWM_P, PWM_S]= Classify_LeaveOut_PWM_functions(X,Y)
+% Classify the VWM using Leave one sample out and returns the classificatiom accurcay
+function [outcome, accuracy1]= Classify_LeaveOut_PWM_functions(X,Y)
 addpath ./Leave1out_PWM
 
-% global PWM_P PWM_S
 catogries1= [1 2 3 4 5 6];
 
 % intervals1= [-8 -1 2 5 8]+1.5;
@@ -29,7 +29,7 @@ intervals1= mu+sigma0*[-2 -1 0 1 2]; % 1 1 1 1  0.9875 1
 C = cvpartition(Y, 'LeaveOut');
 
 for num_fold = 1:C.NumTestSets
-    clearvars -except X Y catogries1 catogries1 PWM_P PWM_S intervals1 intervals1 acc1 acc2 num_fold C outcome outcome2 outcome classPrior
+    clearvars -except X Y catogries1 catogries1 VWM_P VWM_S intervals1 intervals1 acc1 acc2 num_fold C outcome outcome2 outcome classPrior
     
     trIdx = C.training(num_fold);
     teIdx = C.test(num_fold);
@@ -46,21 +46,21 @@ for num_fold = 1:C.NumTestSets
     Xp= mapping_levels(Xp,intervals1, catogries1);
     Xs= mapping_levels(Xs,intervals1, catogries1);
     
-    PWM_P = Generate_PWM_matrix(Xp, catogries1);
-    PWM_S = Generate_PWM_matrix(Xs, catogries1);
+    VWM_P = Generate_VWM_matrix(Xp, catogries1);
+    VWM_S = Generate_VWM_matrix(Xs, catogries1);
     
     X_train_levels=[Xp;Xs];
-    PWM_f_train= Generate_PWM_features(X_train_levels, PWM_P, PWM_S);
+    VWM_f_train= Generate_VWM_features(X_train_levels, VWM_P, VWM_S);
     
     X_test_levels= mapping_levels(X_test, intervals1, catogries1);
-    PWM_fP_test= Generate_PWM_features(X_test_levels, PWM_P, PWM_S);
+    VWM_fP_test= Generate_VWM_features(X_test_levels, VWM_P, VWM_S);
 
     
     %% Train and test the model
-    [classifier] = trainClassifier(PWM_f_train,Y_train, 'logisticRegression');   %train classifier
+    [classifier] = trainClassifier(VWM_f_train,Y_train, 'logisticRegression');   %train classifier
  
-    %% Test1 the model
-    [predictions1] = applyClassifier(PWM_fP_test, classifier);       %test it
+    %% Test the model
+    [predictions1] = applyClassifier(VWM_fP_test, classifier);       %test it
     [result1,predictedLabels1,trace1] = summarizePredictions(predictions1,classifier,'averageRank',Y_test);
     acc1(num_fold)= 1-result1{1};  % rank accuracy
     global scores
@@ -73,7 +73,7 @@ accuracy1= sum(acc1)/sum(C.TestSize);
 end
 
 %% Funtions
-
+%% Replace each voxel intensity by integer number for each of the specified intervals
 function X=mapping_levels(X,intervals, catogries)
 
 if size(catogries,2) ==4
@@ -127,26 +127,26 @@ elseif size(catogries,2) ==6
     end
 end
 end
-
-function PWM_matrix= Generate_PWM_matrix(X_train, catogries)
+%% Computes the Voxel Probability Matrix (VPM)
+function VWM_matrix= Generate_VWM_matrix(X_train, catogries)
 catogries=size(catogries,2);
-PWM_matrix= zeros(5, size(X_train,2)); %The weight matrix of picture
+VWM_matrix= zeros(5, size(X_train,2)); %The weight matrix of picture
 
 for k=1:catogries
     for i=1:size(X_train, 2)
-        PWM_matrix(k,i)= sum(X_train(:, i) == k)/size(X_train,1);
+        VWM_matrix(k,i)= sum(X_train(:, i) == k)/size(X_train,1);
     end
 end
 
 
 end
-
-function PWM_features= Generate_PWM_features(X_train, PWM_P, PWM_S)
+%% Converts the VPM to Voxel Weight Matrix (VWM)
+function VWM_features= Generate_VWM_features(X_train, VWM_P, VWM_S)
     
-PWM_f1= zeros(size(X_train,1), size(X_train,2));
-PWM_f2= zeros(size(X_train,1), size(X_train,2));
+PWM_f1= zeros(size(X_train,1), size(X_train,2)); %f1 is the first feature of VWM
+PWM_f2= zeros(size(X_train,1), size(X_train,2)); %f1 is the second feature of VWM
 
-
+% replace the integer values by its probability from VPM
 for i=1:size(X_train,1)
     for j=1:size(X_train,2)
         pwm_idx=X_train(i,j);
@@ -154,10 +154,9 @@ for i=1:size(X_train,1)
         PWM_f2(i,j)= PWM_S(pwm_idx,j);
     end
 end
-
+% sum all the probabilities to get the VWM
 f1=sum(PWM_f1,2);
 f2=sum(PWM_f2,2);
 PWM_features=[f1 f2];
 
 end
-

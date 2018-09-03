@@ -1,3 +1,4 @@
+%The script returns the subject data to a single matrix with the rows as Voxels(features) and coloumn as trials(samples)
 % clear all
 addpath ./Functions
 addpath ./Functions/Netlab

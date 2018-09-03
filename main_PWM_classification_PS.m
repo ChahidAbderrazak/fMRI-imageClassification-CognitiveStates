@@ -6,11 +6,12 @@ addpath ./datasets
 addpath ./Leave1out_PWM
 addpath ./test
 addpath D:\SSI\Project\Datasets\starplus
+
 for subject=1:6
     switch(subject)
         case 1
             load('data-starplus-04799-v7.mat')
-            single_subject_classification_test
+            single_subject_classification_test %Get X
             [outcome, accuracy11]= Classify_LeaveOut_PWM_functions(X,Y);
             X_P_vec1= X_P(:);
             X_S_vec1= X_S(:);
