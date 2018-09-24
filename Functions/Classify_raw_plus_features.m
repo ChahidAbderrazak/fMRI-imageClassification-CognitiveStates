@@ -1,9 +1,6 @@
-% X_fourier=X;
-% X_ESD=X;
-% X_wavelet=X;
-% X_SCSA=X;
+
 clear X_added
-for i=1:8
+for i=1:5
 
     switch(i)
         case 1
@@ -81,33 +78,26 @@ for i=1:8
            acc(j,1:2)=[acc1,acc2];
              
          end
-         
-        case 6
-            clear X_added
-            X_added= [X_FT B_featuresA_h1];
-            X_FT_B_SCSA= [X X_added];
-            [acc1, acc2]= Apply_LeavOut_classification(X_FT_B_SCSA, Y);
-            acc(end+1,1:2)=[acc1,acc2];
-        case 7
-            clear X_added
-            X_added= [X_FT P_featuresA_h1];
-            X_FT_P_SCSA= [X X_added];
-            [acc1, acc2]= Apply_LeavOut_classification(X_FT_P_SCSA, Y);
-            acc(end+1,1:2)=[acc1,acc2];
-        case 8
-            clear X_added
-            X_PWM= [X PWM];
-            [acc1, acc2]= Apply_LeavOut_classification(X_PWM, Y);
-            acc(end+1,1:2)=[acc1,acc2];
+%          
+%         case 6
+%             clear X_added
+%             X_added= [X_FT B_featuresA_h1];
+%             X_FT_B_SCSA= [X X_added];
+%             [acc1, acc2]= Apply_LeavOut_classification(X_FT_B_SCSA, Y);
+%             acc(end+1,1:2)=[acc1,acc2];
+%         case 7
+%             clear X_added
+%             X_added= [X_FT P_featuresA_h1];
+%             X_FT_P_SCSA= [X X_added];
+%             [acc1, acc2]= Apply_LeavOut_classification(X_FT_P_SCSA, Y);
+%             acc(end+1,1:2)=[acc1,acc2];
+%         case 8
+%             clear X_added
+%             X_PWM= [X PWM];
+%             [acc1, acc2]= Apply_LeavOut_classification(X_PWM, Y);
+%             acc(end+1,1:2)=[acc1,acc2];
          
     end
 end
     
-%     
-%     %% TRain and get accuracy Acc_i
-%     
-%     [acc1, acc2]= Apply_LeavOut_classification(X, Y);
-%     acc(j,1:2)=[acc1,acc2]
-%     
-%     
-% end
+

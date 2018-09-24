@@ -115,6 +115,6 @@ for l=1:10
     plot(Acc);
 end
 
-Avg_Acc= sum(Acc)/
-
-max(Acc)
+% Avg_Acc= sum(Acc)/
+% 
+% max(Acc)

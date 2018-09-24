@@ -1,11 +1,11 @@
-%The script transform the subject data to a single matrix with the rows as Voxels(features) and coloumn as trials(samples)
+%This script transform the subject data to a single matrix with the rows as Voxels(features) and coloumn as trials(samples)
 
 %%
 % clear all
-addpath ./Functions
-addpath ./Functions/Netlab
-addpath ./datasets
-addpath ./test
+addpath ../Functions
+addpath ../Functions/Netlab
+addpath ../datasets
+addpath ../test
 
 normalization=0; % *Normalize each trial
 normalization_PWM=0; % *Normalize the input to PWM

@@ -20,8 +20,8 @@ trials=find([info.cond]>1); % The trials of S and P
 
 %% Select the voxels belong to the specified ROIs
 
-% [infoAvg,dataAvg,metaAvg] = transformIDM_selectROIVoxels(info0,data0,meta0,{'CALC'});
- [infoAvg,dataAvg,metaAvg] = transformIDM_avgROIVoxels(info0,data0,meta0,{'CALC' 'LIPL' 'LT' 'LTRIA' 'LOPER' 'LIPS' 'LDLPFC'});
+[infoAvg,dataAvg,metaAvg] = transformIDM_selectROIVoxels(info0,data0,meta0,{'CALC'});
+% [infoAvg,dataAvg,metaAvg] = transformIDM_avgROIVoxels(info0,data0,meta0,{'CALC' 'LIPL' 'LT' 'LTRIA' 'LOPER' 'LIPS' 'LDLPFC'});
 
 
 % 'CALC' 'LIPL' 'LT' 'LTRIA' 'LOPER' 'LIPS' 'LDLPFC'

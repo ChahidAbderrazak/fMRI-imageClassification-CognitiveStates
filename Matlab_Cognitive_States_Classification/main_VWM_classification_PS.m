@@ -17,7 +17,6 @@ for subject=1:6
             load('data-starplus-04820-v7.mat')
             Convert_single_subject_data_to_matrix
             [outcome, accuracy21 ]= Classify_LeaveOut_VWM_functions(X,Y);
-
         case 3
             load('data-starplus-04847-v7.mat')
             Convert_single_subject_data_to_matrix

@@ -31,13 +31,13 @@ for i=1:5
            acc(j,1:2)=[acc1,acc2];
          end
         
-        case 2
+        case 3
             X_added= ESD;
             X_ESD=X_added;
            [acc1, acc2]= Apply_LeavOut_classification(X_ESD, Y);
            acc(end+1,1:2)=[acc1,acc2];
             
-        case 3
+        case 4
             X_added= wavelet_features;
             X_wavelet= X_added;
            [acc1, acc2]= Apply_LeavOut_classification(X_wavelet, Y);
@@ -52,7 +52,7 @@ for i=1:5
                 clear X_added
                 X_added=F_featuresA_h1;
 
-                case 9 
+                case 9
                 clear X_added
                 X_added=S_featuresA_h1;
 

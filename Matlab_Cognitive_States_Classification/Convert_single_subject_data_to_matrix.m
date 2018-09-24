@@ -1,11 +1,12 @@
-%The script transform the subject data to a single matrix with the rows as Voxels(features) and coloumn as trials(samples)
+%This script transform the subject data to a single matrix with the rows as Voxels(features) and coloumn as trials(samples)
 
 %%
-% clear all
-addpath ./Functions
-addpath ./Functions/Netlab
-addpath ./datasets
-addpath ./test
+clear all
+addpath ../Functions
+addpath ../Functions/Netlab
+addpath ../datasets
+addpath ../test
+load('data-starplus-05680-v7.mat')
 
 normalization=0; % *Normalize each trial
 normalization_PWM=0; % *Normalize the input to PWM
@@ -71,40 +72,40 @@ X=[X_P;X_S];
 Y=[labelsP;labelsS];
 
 %%
-% %% *Append the DC component and MAX Amplitude of fourier transform to the features
-% [X_FT,Max_X_FT,I,X_DC]= apply_fourier(X, string('false'));
-% % X(:, size(X,2)+1)= X_DC(:,1);
-% % X= [X X_FT];
-% % X(:, size(X,2)+1)= Max_X_FT(:,1);
-% % X(:, size(X,2)+1)= I(:,1);
-% 
-% %% *Get ESD feature
-% ESD= X_FT.*conj(X_FT);
-% ESD= sum(ESD,2);
-% % X(:, size(X,2)+1)= ESD(:,1);
-% 
-% %% *Generate SCSA Based Features
-% 
-% %  addpath D:\SSI\Project\Matlab\SCSA_SS1_Features_Abderrazak-20180705T090220Z-001\Functions ; addpath D:\SSI\Project\Matlab\SCSA_SS1_Features_Abderrazak-20180705T090220Z-001\Functions\Abderrazak
-% % addpath ./Functions ; addpath ./Functions/Abderrazak; 
+%% *Append the DC component and MAX Amplitude of fourier transform to the features
+[X_FT,Max_X_FT,I,X_DC]= apply_fourier(X, string('false'));
+% X(:, size(X,2)+1)= X_DC(:,1);
+% X= [X X_FT];
+% X(:, size(X,2)+1)= Max_X_FT(:,1);
+% X(:, size(X,2)+1)= I(:,1);
+
+%% *Get ESD feature
+ESD= X_FT.*conj(X_FT);
+ESD= sum(ESD,2);
+% X(:, size(X,2)+1)= ESD(:,1);
+
+%% *Generate SCSA Based Features
+
+addpath D:\SSI\Project\Matlab\SCSA_SS1_Features_Abderrazak-20180705T090220Z-001\Functions ; addpath D:\SSI\Project\Matlab\SCSA_SS1_Features_Abderrazak-20180705T090220Z-001\Functions\Abderrazak
+% addpath ./Functions ; addpath ./Functions/Abderrazak; 
 % addpath /Users/sehrism/Documents/MATLAB/SCSA_SS1_Features_Abderrazak/Functions; addpath /Users/sehrism/Documents/MATLAB/SCSA_SS1_Features_Abderrazak/Functions/Abderrazak;
 % 
 % %% 
-% h=1;gm=0.5;fs=1;
-% [F_featuresA_h1, S_featuresA_h1, B_featuresA_h1, P_featuresA_h1,AF_featuresA_h1]= SCSA_Transform_features(X(:,1:112),h,gm,fs);
-% % X= [X F_featuresA_h1];
-% % X= [X S_featuresA_h1(:,1:52)]; %Increase the %error
-% % X= [X B_featuresA_h1];
-% % X= [X P_featuresA_h1];
-% % X(:,size(X,2)+1)= AF_featuresA_h1;
+h=1;gm=0.5;fs=1;
+[F_featuresA_h1, S_featuresA_h1, B_featuresA_h1, P_featuresA_h1,AF_featuresA_h1]= SCSA_Transform_features(X,h,gm,fs);
+% X= [X F_featuresA_h1];
+% X= [X S_featuresA_h1(:,1:52)]; %Increase the %error
+% X= [X B_featuresA_h1];
+% X= [X P_featuresA_h1];
+% X(:,size(X,2)+1)= AF_featuresA_h1;
 % 
-% %% *Extract wavelet features
-% addpath /Users/sehrism/Documents/MATLAB;
-% wavelet_features= zeros(size(X,1),8);
-% 
-% for i=1:size(X,1)
-%     wavelet_features(i,:)= getwaveletFeature(X(i,:));
-% end
-% 
-% % classify_features
-% % Classify_raw_plus_features % *
+% % %% *Extract wavelet features
+% % addpath /Users/sehrism/Documents/MATLAB;
+% % wavelet_features= zeros(size(X,1),8);
+% % 
+% % for i=1:size(X,1)
+% %     wavelet_features(i,:)= getwaveletFeature(X(i,:));
+% % end
+% % 
+% % % classify_features
+% % % Classify_raw_plus_features % *
