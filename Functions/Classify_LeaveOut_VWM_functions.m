@@ -1,13 +1,16 @@
 % Classify the VWM using Leave one sample out and returns the classificatiom accurcay
 function [outcome, accuracy1]= Classify_LeaveOut_VWM_functions(X,Y)
-addpath ./Leave1out_PWM
 
 catogries1= [1 2 3 4 5 6];
+% catogries1= [6 4 2 1 3 5];
 
 % intervals1= [-8 -1 2 5 8]+1.5;
 
 % intervals1= [-8 -1 2 5 8];
-mu=0;sigma0=2.68;
+% mu=0;sigma0=2.68;
+% mu=0.3513; sigma0= 2.7381;
+mu=0; sigma0= 2.7381;
+
 intervals1= mu+sigma0*[-2 -1 0 1 2]; % 1 1 1 1  0.9875 1
 % intervals1= mu+(1.1*sigma0)*[-2 -1 0 1 2]; % 1 1 1 1  1 1
 % intervals1= mu+(1.2*sigma0)*[-2 -1 0 1 2]; % 1 1 1 1  1 1
@@ -29,7 +32,7 @@ intervals1= mu+sigma0*[-2 -1 0 1 2]; % 1 1 1 1  0.9875 1
 C = cvpartition(Y, 'LeaveOut');
 
 for num_fold = 1:C.NumTestSets
-    clearvars -except X Y catogries1 catogries1 VWM_P VWM_S intervals1 intervals1 acc1 acc2 num_fold C outcome outcome2 outcome classPrior
+    clearvars -except X Y catogries1 catogries1 VWM_P VWM_S intervals1 intervals1 acc1 num_fold C outcome outcome2 outcome classPrior accuracy11 accuracy21 accuracy31 accuracy41 accuracy51 accuracy61
     
     trIdx = C.training(num_fold);
     teIdx = C.test(num_fold);
@@ -55,12 +58,16 @@ for num_fold = 1:C.NumTestSets
     X_test_levels= mapping_levels(X_test, intervals1, catogries1);
     VWM_fP_test= Generate_VWM_features(X_test_levels, VWM_P, VWM_S);
 
-    
+    X_VWM_train= [X(trIdx,:) VWM_f_train];
+    X_VWM_test= [X(teIdx,:) VWM_fP_test];
     %% Train and test the model
     [classifier] = trainClassifier(VWM_f_train,Y_train, 'logisticRegression');   %train classifier
- 
+%     [classifier] = trainClassifier(X_VWM_train,Y_train, 'logisticRegression');   %train classifier
+
     %% Test the model
     [predictions1] = applyClassifier(VWM_fP_test, classifier);       %test it
+%     [predictions1] = applyClassifier(X_VWM_test, classifier);       %test it
+
     [result1,predictedLabels1,trace1] = summarizePredictions(predictions1,classifier,'averageRank',Y_test);
     acc1(num_fold)= 1-result1{1};  % rank accuracy
     global scores

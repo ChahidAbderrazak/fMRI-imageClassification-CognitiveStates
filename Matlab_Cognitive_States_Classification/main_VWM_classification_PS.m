@@ -1,10 +1,6 @@
-clear all
-addpath ./Functions
-addpath ./Functions/Netlab
-addpath ./datasets
+addpath ../Functions
+addpath ../Functions/Netlab
 % addpath /Users/sehrism/Documents/datasets
-addpath ./Leave1out_PWM
-addpath ./test
 addpath D:\SSI\Project\Datasets\starplus
 
 for subject=1:6

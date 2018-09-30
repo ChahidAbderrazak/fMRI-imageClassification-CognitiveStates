@@ -9,9 +9,9 @@ for k=1:size(X,1)
     X_FT(k,:)= angle(fft(X(k,:)));
 end
 X_DC= X_FT(:,1);
-X_FT(:,1)=[];
+X_FT_without_DC=X_FT(:,2:end);
 for k=1:size(X,1)
-    [Max_X_FT(k,1), I(k,1)]= max(X_FT(k,:));
+    [Max_X_FT(k,1), I(k,1)]= max(X_FT_without_DC(k,:));
 end
 
 if normalize == string('true')
