@@ -1,16 +1,13 @@
-%This script transform the subject data to a single matrix with the rows as Voxels(features) and coloumn as trials(samples)
+%% This script transform the subject data to a single matrix with the rows as Voxels(features) and coloumn as trials(samples)
+% the  datset should be alrady loaded. ie:             load('data-starplus-04799-v7.mat')
+
 tic
 %%
 addpath ../Functions
 addpath ../Functions/Netlab
 addpath ../Functions/Functions_abderrazak
 addpath D:\SSI\Project\Datasets\starplus
-load('data-starplus-04799-v7.mat')
-% load('data-starplus-04820-v7.mat')
-% load('data-starplus-04847-v7.mat')
-% load('data-starplus-05675-v7.mat')
-% load('data-starplus-05680-v7.mat')
-% load('data-starplus-05710-v7.mat')
+
 
 normalization=0; % *Normalize each trial
 normalization_PWM=0; % *Normalize the input to PWM
