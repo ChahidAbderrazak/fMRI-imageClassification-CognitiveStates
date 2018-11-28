@@ -1,12 +1,8 @@
 clear all
 addpath ./Functions
 addpath ./Functions/Netlab
-addpath ./datasets
-% addpath /Users/sehrism/Documents/datasets
-addpath ./Leave1out_PWM
-addpath ./test
-addpath D:\SSI\Project\Datasets\starplus
-
+addpath ./Functions/Functions_abderrazak
+addpath ../../Input_data
 for subject=1:6
     switch(subject)
         case 1
