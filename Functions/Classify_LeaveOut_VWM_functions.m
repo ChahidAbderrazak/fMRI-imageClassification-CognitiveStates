@@ -1,5 +1,5 @@
 % Classify the VWM using Leave one sample out and returns the classificatiom accurcay
-function [outcome, accuracy1]= Classify_LeaveOut_VWM_functions(X,Y)
+function [outcome, accuracy1, Sparse_P_ratio, Sparse_S_ratio]= Classify_LeaveOut_VWM_functions(X,Y,k)
 
 catogries1= [1 2 3 4 5 6];
 % catogries1= [6 4 2 1 3 5];
@@ -11,7 +11,7 @@ catogries1= [1 2 3 4 5 6];
 % mu=0.3513; sigma0= 2.7381;
 mu=0; sigma0= 2.7381;
 
-intervals1= mu+sigma0*[-2 -1 0 1 2]; % 1 1 1 1  0.9875 1
+intervals1= mu+k*sigma0*[-2 -1 0 1 2]; % 1 1 1 1  0.9875 1
 % intervals1= mu+(1.1*sigma0)*[-2 -1 0 1 2]; % 1 1 1 1  1 1
 % intervals1= mu+(1.2*sigma0)*[-2 -1 0 1 2]; % 1 1 1 1  1 1
 % intervals1= mu+(1.3*sigma0)*[-2 -1 0 1 2]; % 1 1 1 1  1 1
@@ -77,6 +77,12 @@ end
 %% Average Accuracy 
 accuracy1= sum(acc1)/sum(C.TestSize);
 
+
+%% Find the sparsity of PWM
+Sparse_P= nnz(~VWM_P);
+Sparse_S= nnz(~VWM_S);
+Sparse_P_ratio= (Sparse_P/(size(VWM_P,1)*size(VWM_P,2)))*100;
+Sparse_S_ratio= (Sparse_S/(size(VWM_S,1)*size(VWM_S,2)))*100;
 end
 
 %% Funtions
