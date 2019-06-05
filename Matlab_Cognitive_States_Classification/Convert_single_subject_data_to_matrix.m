@@ -6,7 +6,8 @@ tic
 addpath ../Functions
 addpath ../Functions/Netlab
 addpath ../Functions/Functions_abderrazak
-addpath D:\SSI\Project\Datasets\starplus
+% addpath D:\SSI\Project\Datasets\starplus
+addpath D:\Datasets\starplus
 
 
 normalization=0; % *Normalize each trial

@@ -1,14 +1,14 @@
-% addpath ../Functions
-% addpath ../Functions/Netlab
-% % addpath /Users/sehrism/Documents/datasets
-% addpath D:\SSI\Project\Datasets\starplus
+addpath ../Functions
+addpath ../Functions/Netlab
+% addpath /Users/sehrism/Documents/datasets
+addpath ../Datasets
 
 k_all= [];
 cnt = 1;
 
 for k=1:0.5:5
     
-    for subject=1:6
+    for subject=1%:6
         switch(subject)
             case 1
                 load('data-starplus-04799-v7.mat')
