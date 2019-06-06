@@ -1,19 +1,15 @@
 % Classify the VWM using Leave one sample out and returns the classificatiom accurcay
-function [outcome, Sparse_P_ratio, Sparse_S_ratio, Accuracy,Sensitivity,Specificity,Precision,Gmean,F1score]= Classify_kfold_VWM_functions(X,Y,M,sigma0,mu0)
+function [outcome, Sparse_P_ratio, Sparse_S_ratio, Accuracy,Sensitivity,Specificity,Precision,Gmean,F1score]= Classify_kfold_VWM_functions(X,Y,M)
 
-catogries1= 1:M;
-levels=size(catogries1,2);
 
-% intervals1= mu0+k*sigma0*[-5 -4 -3 -2 -1 0 1 2 3 4 5]; % 1 1 1 1  0.9875 1
+[Levels, Level_intervals]=Automated_quantization(M, X,Y);
 
-intervals1=linspace(mu0-3*sigma0, mu0+3*sigma0, levels-1);
 %% Leave one sample Out Cross-Validation
 K=10;
 C = cvpartition(Y, 'KFold',K);
 
 for num_fold = 1:C.NumTestSets
-    clearvars -except accuracy sensitivity specificity precision gmean f1score X Y catogries1 catogries1 VWM_P VWM_S intervals1 intervals1 acc1 num_fold C outcome outcome2 outcome classPrior accuracy11 accuracy21 accuracy31 accuracy41 accuracy51 accuracy61
-    
+    clearvars VWM*
     trIdx = C.training(num_fold);
     teIdx = C.test(num_fold);
     Idx= find(teIdx);
@@ -26,20 +22,18 @@ for num_fold = 1:C.NumTestSets
     Xp=X_train(Y_train==1,:);   Np=size(Xp, 1);
     Xs=X_train(Y_train==2,:);   Ns=size(Xs, 1);
     
-    Qp= mapping_levels(Xp,intervals1, catogries1);
-    Qs= mapping_levels(Xs,intervals1, catogries1);
+    Qp= mapping_levels(Xp,Level_intervals, Levels);
+    Qs= mapping_levels(Xs,Level_intervals, Levels);
     
-    VWM_P = Generate_VWM_matrix(Qp, catogries1);
-    VWM_S = Generate_VWM_matrix(Qs, catogries1);
+    VWM_P = Generate_VWM_matrix(Qp, Levels);
+    VWM_S = Generate_VWM_matrix(Qs, Levels);
     
     X_train_levels=[Qp;Qs];
-    levels=unique(X_train_levels);
-
     
-    VWM_f_train= Generate_VWM_features(X_train_levels, VWM_P, VWM_S,levels);
+    VWM_f_train= Generate_VWM_features(X_train_levels, VWM_P, VWM_S,Levels);
     
-    X_test_levels= mapping_levels(X_test, intervals1, catogries1);
-    VWM_fP_test= Generate_VWM_features(X_test_levels, VWM_P, VWM_S,levels);
+    X_test_levels= mapping_levels(X_test, Level_intervals, Levels);
+    VWM_fP_test= Generate_VWM_features(X_test_levels, VWM_P, VWM_S,Levels);
 
 
     %% Train and test the model
@@ -181,15 +175,15 @@ end
 
 end
 %% Converts the VPM to Voxel Weight Matrix (VWM)
-function VWM_features= Generate_VWM_features(X_train, VWM_P, VWM_S,levels)
+function VWM_features= Generate_VWM_features(X_train, VWM_P, VWM_S,Levels)
     
 VWM_f1= zeros(size(X_train,1), size(X_train,2)); %f1 is the first feature of VWM
 VWM_f2= zeros(size(X_train,1), size(X_train,2)); %f1 is the second feature of VWM
 
 % replace the integer values by its probability from VPM
 
-VWM_fp=zeros(size(X_train,1), size(levels,1));
-VWM_fn=zeros(size(X_train,1), size(levels,1));
+VWM_fp=zeros(size(X_train,1), max(size(Levels)));
+VWM_fn=zeros(size(X_train,1), max(size(Levels)));
 
 for i=1:size(X_train,1)
     for j=1:size(X_train,2)
@@ -197,7 +191,9 @@ for i=1:size(X_train,1)
         VWM_f1(i,j)= VWM_P(VWM_idx,j);
         VWM_f2(i,j)= VWM_S(VWM_idx,j);
         
-        %% seperate features-levels
+        %% seperate features-Levels
+%         i
+%         j
         VWM_fp(i,VWM_idx)=VWM_fp(i,VWM_idx)+VWM_P(VWM_idx,j);
         VWM_fn(i,VWM_idx)=VWM_fn(i,VWM_idx)+VWM_S(VWM_idx,j);
 
