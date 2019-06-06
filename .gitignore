@@ -2,3 +2,6 @@
 Apply_GBN.asv
 Apply_GBN.asv
 Extruct_data_for_Classification.asv
+*.m~
+*.asv
+Matlab_Cognitive_States_Classification/summary_result.mat

@@ -1,7 +1,7 @@
 % Classify the VWM using Leave one sample out and returns the classificatiom accurcay
-function [outcome, accuracy1, Sparse_P_ratio, Sparse_S_ratio]= Classify_kfold_VWM_functions(X,Y,k,sigma0,mu0)
+function [outcome, Sparse_P_ratio, Sparse_S_ratio, Accuracy,Sensitivity,Specificity,Precision,Gmean,F1score]= Classify_kfold_VWM_functions(X,Y,M,sigma0,mu0)
 
-catogries1= [1 2 3 4 5 6];
+catogries1= 1:M;
 levels=size(catogries1,2);
 
 % intervals1= mu0+k*sigma0*[-5 -4 -3 -2 -1 0 1 2 3 4 5]; % 1 1 1 1  0.9875 1
@@ -12,7 +12,7 @@ K=10;
 C = cvpartition(Y, 'KFold',K);
 
 for num_fold = 1:C.NumTestSets
-    clearvars -except X Y catogries1 catogries1 VWM_P VWM_S intervals1 intervals1 acc1 num_fold C outcome outcome2 outcome classPrior accuracy11 accuracy21 accuracy31 accuracy41 accuracy51 accuracy61
+    clearvars -except accuracy sensitivity specificity precision gmean f1score X Y catogries1 catogries1 VWM_P VWM_S intervals1 intervals1 acc1 num_fold C outcome outcome2 outcome classPrior accuracy11 accuracy21 accuracy31 accuracy41 accuracy51 accuracy61
     
     trIdx = C.training(num_fold);
     teIdx = C.test(num_fold);
@@ -51,17 +51,25 @@ for num_fold = 1:C.NumTestSets
 %     [predictions1] = applyClassifier(X_VWM_test, classifier);       %test it
 
     [result1,predictedLabels1,trace1] = summarizePredictions(predictions1,classifier,'averageRank',Y_test);
-    acc1(num_fold)= 1-result1{1};  % rank accuracy
-    
-    err=Y_test-predictedLabels1;
-    
+%     acc1(num_fold)= 1-result1{1};  % rank accuracy
+%     err=Y_test-predictedLabels1;
 %     acc=sum(err==0)/size(predictedLabels1,1)
-    outcome(num_fold,:)=[ acc1(num_fold) ];
+    
+    
+    [accuracy(num_fold),sensitivity(num_fold),specificity(num_fold),precision(num_fold),gmean(num_fold),f1score(num_fold)]=prediction_performance(Y_test, predictedLabels1);
+    
 end
 
-%% Average Accuracy 
-accuracy1= sum(acc1)/size(acc1,2)
 
+outcome(num_fold,:)=[accuracy,sensitivity,specificity,precision,gmean,f1score];
+
+%% Average Accuracy 
+Accuracy= sum(accuracy)/C.NumTestSets;
+Sensitivity= sum(sensitivity)/C.NumTestSets;
+Specificity= sum(specificity)/C.NumTestSets;
+Precision= sum(precision)/C.NumTestSets;
+Gmean= sum(gmean)/C.NumTestSets;
+F1score= sum(f1score)/C.NumTestSets;
 
 %% Find the sparsity of PWM
 Sparse_P= nnz(~VWM_P);
@@ -72,93 +80,93 @@ end
 
 %% Funtions
 %% Replace each voxel intensity by integer number for each of the specified intervals
-function Q=mapping_levels(X,intervals, catogries)
-Q=0*X;
-if size(catogries,2) ==4
-    
-    for i=1:size(X,1)
-        
-        for j=1:size(X,2)
-            if X(i,j) <= intervals(1)
-                Q(i,j)= catogries(1);
-            elseif X(i,j) <= intervals(2)
-                Q(i,j)= catogries(2);
-            elseif X(i,j) <= intervals(3)
-                Q(i,j)= catogries(3);
-            else
-                Q(i,j)= catogries(4);
-            end
-        end
-    end
-
-elseif size(catogries,2) ==5
-    for i=1:size(X,1)
-        for j=1:size(X,2)
-            if X(i,j) <= intervals(1)
-                Q(i,j)= catogries(1);
-            elseif X(i,j) <= intervals(2)
-                Q(i,j)= catogries(2);
-            elseif X(i,j) <= intervals(3)
-                Q(i,j)= catogries(3);
-            elseif X(i,j) <= intervals(4)
-                Q(i,j)= catogries(4);
-            else
-                Q(i,j)= catogries(5);
-            end
-        end
-    end
-elseif size(catogries,2) ==6
-    
-    for i=1:size(X,1)
-        for j=1:size(X,2)
-            if X(i,j) <= intervals(1)
-                Q(i,j)= catogries(1);
-            elseif X(i,j) <= intervals(2)
-                Q(i,j)= catogries(2);
-            elseif X(i,j) <= intervals(3)
-                Q(i,j)= catogries(3);
-            elseif X(i,j) <= intervals(4)
-                Q(i,j)= catogries(4);
-            elseif X(i,j) <= intervals(5)
-                Q(i,j)= catogries(5);
-            else
-                Q(i,j)= catogries(6);
-            end
-%             i
-%             j
-%             Q(i,j)
-        end
-    end
-    
-elseif size(catogries,2) ==8
-    
-    for i=1:size(X,1)
-        for j=1:size(X,2)
-            if X(i,j) <= intervals(1)
-                Q(i,j)= catogries(1);
-            elseif X(i,j) <= intervals(2)
-                Q(i,j)= catogries(2);
-            elseif X(i,j) <= intervals(3)
-                Q(i,j)= catogries(3);
-            elseif X(i,j) <= intervals(4)
-                Q(i,j)= catogries(4);
-            elseif X(i,j) <= intervals(5)
-                Q(i,j)= catogries(5);
-            elseif X(i,j) <= intervals(6)
-                Q(i,j)= catogries(6);
-            elseif X(i,j) <= intervals(7)
-                Q(i,j)= catogries(7);
-            else
-                Q(i,j)= catogries(8);
-            end
-%             i
-%             j
-%             Q(i,j)
-        end
-    end
-end
-
-end
+% % function Q=mapping_levels(X,intervals, catogries)
+% % Q=0*X;
+% % if size(catogries,2) ==4
+% %     
+% %     for i=1:size(X,1)
+% %         
+% %         for j=1:size(X,2)
+% %             if X(i,j) <= intervals(1)
+% %                 Q(i,j)= catogries(1);
+% %             elseif X(i,j) <= intervals(2)
+% %                 Q(i,j)= catogries(2);
+% %             elseif X(i,j) <= intervals(3)
+% %                 Q(i,j)= catogries(3);
+% %             else
+% %                 Q(i,j)= catogries(4);
+% %             end
+% %         end
+% %     end
+% % 
+% % elseif size(catogries,2) ==5
+% %     for i=1:size(X,1)
+% %         for j=1:size(X,2)
+% %             if X(i,j) <= intervals(1)
+% %                 Q(i,j)= catogries(1);
+% %             elseif X(i,j) <= intervals(2)
+% %                 Q(i,j)= catogries(2);
+% %             elseif X(i,j) <= intervals(3)
+% %                 Q(i,j)= catogries(3);
+% %             elseif X(i,j) <= intervals(4)
+% %                 Q(i,j)= catogries(4);
+% %             else
+% %                 Q(i,j)= catogries(5);
+% %             end
+% %         end
+% %     end
+% % elseif size(catogries,2) ==6
+% %     
+% %     for i=1:size(X,1)
+% %         for j=1:size(X,2)
+% %             if X(i,j) <= intervals(1)
+% %                 Q(i,j)= catogries(1);
+% %             elseif X(i,j) <= intervals(2)
+% %                 Q(i,j)= catogries(2);
+% %             elseif X(i,j) <= intervals(3)
+% %                 Q(i,j)= catogries(3);
+% %             elseif X(i,j) <= intervals(4)
+% %                 Q(i,j)= catogries(4);
+% %             elseif X(i,j) <= intervals(5)
+% %                 Q(i,j)= catogries(5);
+% %             else
+% %                 Q(i,j)= catogries(6);
+% %             end
+% % %             i
+% % %             j
+% % %             Q(i,j)
+% %         end
+% %     end
+% %     
+% % elseif size(catogries,2) ==8
+% %     
+% %     for i=1:size(X,1)
+% %         for j=1:size(X,2)
+% %             if X(i,j) <= intervals(1)
+% %                 Q(i,j)= catogries(1);
+% %             elseif X(i,j) <= intervals(2)
+% %                 Q(i,j)= catogries(2);
+% %             elseif X(i,j) <= intervals(3)
+% %                 Q(i,j)= catogries(3);
+% %             elseif X(i,j) <= intervals(4)
+% %                 Q(i,j)= catogries(4);
+% %             elseif X(i,j) <= intervals(5)
+% %                 Q(i,j)= catogries(5);
+% %             elseif X(i,j) <= intervals(6)
+% %                 Q(i,j)= catogries(6);
+% %             elseif X(i,j) <= intervals(7)
+% %                 Q(i,j)= catogries(7);
+% %             else
+% %                 Q(i,j)= catogries(8);
+% %             end
+% % %             i
+% % %             j
+% % %             Q(i,j)
+% %         end
+% %     end
+% % end
+% % 
+% % end
 %% Computes the Voxel Probability Matrix (VPM)
 function VWM_matrix= Generate_VWM_matrix(X_train, catogries)
 catogries=size(catogries,2);

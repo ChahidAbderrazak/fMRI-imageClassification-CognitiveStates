@@ -8,18 +8,18 @@ addpath ../Functions
 addpath ../Functions/Netlab
 addpath ../Functions/Functions_abderrazak
 addpath ../Datasets
+addpath R:\chahida\Projects-Dataset\fMRI\StarPlus2018
 
-
-normalization=0; % *Normalize each trial
-normalization_PWM=0; % *Normalize the input to PWM
-
+%% nput parameters
+M_list=6:10
 
 
 %% load datsets
 load('Epileptic_Seizure_UCI.mat')
 Y=y;
 
-
+%% 
+Output_results=[];
 for j=1:6
     %% prepare positive negative datsets
     % shuffle data
@@ -36,7 +36,7 @@ for j=1:6
     mu=mean([mean(Xp(:)),mean(Xn(:))]);
 
 
-    figure;histogram(Xp);hold on;histogram(Xn)
+    figure(1);histogram(Xp);hold on;histogram(Xn)
 
     % build the dataset
     X=[Xp;Xn];
@@ -45,19 +45,35 @@ for j=1:6
 
     %% 5-folds cross-validation
     cnt = 0;
-    for k=1:0.5:5  
-    cnt = cnt+1;
-    [outcome, Accuracy(cnt,1), Sparsity_P(cnt,1), Sparsity_S(cnt,1)]= Classify_kfold_VWM_functions(X,y,k,sigma,mu);
-    Accuracy
+    for k=M_list
+        
+        cnt = cnt+1;
+        %% Apply k_fold classification
+        [outcome, Sparse_P(cnt,1), Sparse_S(cnt,1), Accuracy(cnt,1),...
+         Sensitivity(cnt,1),Specificity(cnt,1),Precision(cnt,1),Gmean(cnt,1),...
+         F1score(cnt,1)]= Classify_kfold_VWM_functions(X,y,k,sigma,mu);
+     
+        Accuracy
+        
     end
 
-    Accuracy_av(j)= sum(Accuracy)/size(Accuracy,1)
+    Accuracy_av(j)= sum(Accuracy)/size(Accuracy,1);
+    one_vec=ones(cnt,1);
+    Output_k =[ j*one_vec, M_list', mu*one_vec, sigma*one_vec, Accuracy,Sensitivity,Specificity,Precision,Gmean,F1score];
 
+    Output_results=[Output_results;Output_k];
 end
 
 mean=mean(Accuracy_av)
 var=std(Accuracy_av)^2
 
+%% table
+%% Add the  results to a table
+colnames={'Shuffle', 'M','mu','sigma','Accuracy','Sensitivity','Specificity','Precision','Gmean','F1score'};
+perform_output= array2table(Output_results, 'VariableNames',colnames);
+  
+% excel sheet
+writetable(perform_output,strcat('../Excel/UCI_Epilepsy_kFold_Acc',num2str(Accuracy_av(1)),'.xlsx'))
 
-save('summary_result.mat', 'Accuracy', 'Sparsity_P', 'Sparsity_S', 'k')
+save('summary_result.mat', 'perform_output', 'k')
 
