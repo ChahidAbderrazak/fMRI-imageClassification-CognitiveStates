@@ -13,7 +13,8 @@ function [Levels, Level_intervals]=Automated_quantization(M, X,Y)
     sigma=min([std(series1),std(series2)]);    mu=mean([mean(series1),mean(series2)]);
 
     %% Metod 1
-    Level_intervals=linspace(mu-3*sigma, mu+3*sigma, M-1);
+    step=2.8;
+    Level_intervals=linspace(mu-step*sigma, mu+step*sigma, M-1);
     
     %% method 2  (toe b improved later if needed)
 %     Level_intervals= Auto_split(M,centers,diff_count);

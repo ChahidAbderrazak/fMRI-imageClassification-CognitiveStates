@@ -11,7 +11,7 @@ addpath ../Datasets
 addpath R:\chahida\Projects-Dataset\fMRI\StarPlus2018
 
 %% nput parameters
-M_list=6:2:10
+M_list=6:2:15
 
 
 %% load datsets
@@ -20,7 +20,7 @@ Y=y;
 
 %% 
 Output_results=[];
-for j=1:6
+for j=1%:6
     %% prepare positive negative datsets
     % shuffle data
     rand_pos = randperm(length(EEG));
@@ -51,7 +51,7 @@ for j=1:6
         %% Apply k_fold classification
         [outcome, Sparse_P(cnt,1), Sparse_S(cnt,1), Accuracy(cnt,1),...
          Sensitivity(cnt,1),Specificity(cnt,1),Precision(cnt,1),Gmean(cnt,1),...
-         F1score(cnt,1)]= Classify_kfold_VWM_functions(X,y,k,sigma,mu);
+         F1score(cnt,1)]= Classify_kfold_VWM_functions(X,y,k);
      
         Accuracy
         
@@ -70,7 +70,7 @@ var=std(Accuracy_av)^2
 %% table
 %% Add the  results to a table
 colnames={'Shuffle', 'M','mu','sigma','Accuracy','Sensitivity','Specificity','Precision','Gmean','F1score'};
-perform_output= array2table(Output_results, 'VariableNames',colnames);
+perform_output= array2table(Output_results, 'VariableNames',colnames)
   
 % excel sheet
 writetable(perform_output,strcat('../Excel/UCI_Epilepsy_kFold_Acc',num2str(Accuracy_av(1)),'.xlsx'))
