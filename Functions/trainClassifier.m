@@ -222,8 +222,9 @@ switch classifierType
   
  case {'nnets'}
   [models] = classifierNNets(examples,labels);
-
   
+ 
+
  case {'svm'}
   % the old SVM code (inefficient, implementation for a class)
 
@@ -275,7 +276,7 @@ end
 %
 
 switch classifierType
- case {'knn','svmlight','pairwise','neural','nnets','svm','logisticRegression'}
+ case {'knn','svmlight','pairwise','neural','nnets','svm','SVMM','logisticRegression'}
 
   % Training Set information
   trainingSetInfo.classifierParameters = classifierParameters;

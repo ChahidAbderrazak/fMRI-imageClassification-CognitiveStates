@@ -8,10 +8,10 @@ addpath ../Functions
 addpath ../Functions/Netlab
 addpath ../Functions/Functions_abderrazak
 addpath ../Datasets
-addpath R:\chahida\Projects-Dataset\fMRI\StarPlus2018
+addpath /Volumes/eman/chahida/Projects-Dataset/fMRI/StarPlus2018/
 
 %% nput parameters
-M_list=6:10
+M_list=6%:10
 
 
 %% load datsets
@@ -36,7 +36,7 @@ for j=1:6
     mu=mean([mean(Xp(:)),mean(Xn(:))]);
 
 
-    figure(1);histogram(Xp);hold on;histogram(Xn)
+%     figure(1);histogram(Xp);hold on;histogram(Xn)
 
     % build the dataset
     X=[Xp;Xn];
