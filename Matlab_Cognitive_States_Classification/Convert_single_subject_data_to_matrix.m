@@ -9,7 +9,7 @@ addpath ../Functions/Functions_abderrazak
 % addpath D:\SSI\Project\Datasets\starplus
 addpath D:\Datasets\starplus
 
-
+% ROI_list={'CALC'};%{'CALC' 'LIPL' 'LT' 'LTRIA' 'LOPER' 'LIPS' 'LDLPFC'}
 normalization=0; % *Normalize each trial
 normalization_PWM=0; % *Normalize the input to PWM
 
@@ -20,7 +20,7 @@ trials=find([info.cond]>1); % The trials of S and P
 
 %% Select the voxels belong to the specified ROIs
 
-[info1,data1,meta1] = transformIDM_selectROIVoxels(info0,data0,meta0,{'CALC'});
+[info1,data1,meta1] = transformIDM_selectROIVoxels(info0,data0,meta0,ROI_list);
 
 
 % 'CALC' 'LIPL' 'LT' 'LTRIA' 'LOPER' 'LIPS' 'LDLPFC'

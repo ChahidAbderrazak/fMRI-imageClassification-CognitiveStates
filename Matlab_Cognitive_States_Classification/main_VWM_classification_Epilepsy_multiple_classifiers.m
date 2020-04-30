@@ -12,7 +12,8 @@ addpath /Volumes/eman/chahida/Projects-Dataset/fMRI/StarPlus2018/
 
 %% nput parameters
 M=6%:10
-List_classifiers={'logisticRegression','SMLR','nbayes','neural'};
+k=3;
+List_classifiers={'logisticRegression','SMLR','nbayes'};%,'neural'};
 
 
 %% load datsets
@@ -20,7 +21,7 @@ load('Epileptic_Seizure_UCI.mat')
 Y=y;
 
 %% 
-
+Nc=max(size(List_classifiers));
 
 %% prepare positive negative datsets
 % shuffle data
@@ -47,25 +48,24 @@ y=[yp;yn];
 %% 5-folds cross-validation
 
 %% Apply k_fold classification
-[outcome, Sparse_P, Sparse_S, Accuracy,Sensitivity,Specificity,Precision,Gmean,F1score]...
-     = Classify_kfold_VWM_functions_clfs(X,y,M,sigma,mu,List_classifiers);
+[Accuracy,Sensitivity,Specificity,Precision,Gmean,F1score]...
+     = Classify_kfold_VWM_functions_clfs(X,y,M,sigma,mu,k,List_classifiers);
 
 Accuracy
 
 
 %     Accuracy_av(j,:)= sum(Accuracy)/size(Accuracy,1);
-
-Output_results =[  Accuracy,Sensitivity]%,Specificity,Precision,Gmean,F1score];
+one_vec=ones(Nc,1);
+    
+Output_results =[  M*one_vec, k*one_vec, mu*one_vec, sigma*one_vec mean(Accuracy,2),mean(Sensitivity,2),mean(Specificity,2),mean(Precision,2),mean(Gmean,2),mean(F1score,2)];
+Accuracy_av=mean(Accuracy);
 
 %% table
 %% Add the  results to a table
-colnames={'Shuffle', 'M','mu','sigma','Acc-LR','Acc-SMLR','Acc-NB','Acc-NN',...
-           'Sen-LR','Sen-SMLR','Sen-NB','Sen-NN','spec-LR','spec-SMLR','spec-NB','spec-NN',};  % {'logisticRegression','SMLR','nbayes','neural'};
+colnames={'Shuffle', 'M','mu','sigma','Accuracy','Sensitivity','Specificity','Precision','Gmean','F1score'};  % {'logisticRegression','SMLR','nbayes','neural'};
 
 perform_output= array2table(Output_results, 'VariableNames',colnames);
-  
+perform_output.Classifier=List_classifiers';
 % excel sheet
-writetable(perform_output,strcat('../Excel/UCI_Epilepsy_kFold_Acc',num2str(Accuracy_av(1)),'.xlsx'))
-
-save('summary_result.mat', 'perform_output', 'k')
+writetable(perform_output,strcat('../Excel/UCI_Epilepsy_kFold_Acc',num2str(Accuracy_av(1)),'_Clf',num2str(Nc),'.xlsx'))
 

@@ -1,18 +1,18 @@
 % Classify the VWM using Leave one sample out and returns the classificatiom accurcay
-function [outcome, Sparse_P_ratio, Sparse_S_ratio, Accuracy,Sensitivity,Specificity,Precision,Gmean,F1score]= Classify_kfold_VWM_functions_clfs(X,Y,M,sigma0,mu0,List_classifiers)
+function [Accuracy,Sensitivity,Specificity,Precision,Gmean,F1score]= Classify_kfold_VWM_functions_clfs(X,Y,M,sigma0,mu0,k,List_classifiers)
 
 catogries1= 1:M;
 levels=size(catogries1,2);
 
 % intervals1= mu0+k*sigma0*[-5 -4 -3 -2 -1 0 1 2 3 4 5]; % 1 1 1 1  0.9875 1
 
-intervals1=linspace(mu0-3*sigma0, mu0+3*sigma0, levels-1);
+intervals1=linspace(mu0-k*sigma0, mu0+k*sigma0, levels-1);
 %% Leave one sample Out Cross-Validation
 K=10;
 C = cvpartition(Y, 'KFold',K);
 
 for num_fold = 1:C.NumTestSets
-    clearvars -except List_classifiers accuracy sensitivity specificity precision gmean f1score X Y catogries1 catogries1 VWM_P VWM_S intervals1 intervals1 acc1 num_fold C outcome outcome2 outcome classPrior accuracy11 accuracy21 accuracy31 accuracy41 accuracy51 accuracy61
+    clearvars -except  List_classifiers Accuracy Sensitivity Specificity Precision Gmean F1score X Y catogries1 catogries1 VWM_P VWM_S intervals1 intervals1 acc1 num_fold C outcome outcome2 outcome classPrior accuracy11 accuracy21 accuracy31 accuracy41 accuracy51 accuracy61
     
     trIdx = C.training(num_fold);
     teIdx = C.test(num_fold);
@@ -60,7 +60,7 @@ for num_fold = 1:C.NumTestSets
     %     acc=sum(err==0)/size(predictedLabels1,1)
 
 
-        [accuracy(zz,num_fold),sensitivity(zz,num_fold),specificity(zz,num_fold),precision(zz,num_fold),gmean(zz,num_fold),f1score(zz,num_fold)]=prediction_performance(Y_test, predictedLabels1);
+        [Accuracy(zz,num_fold),Sensitivity(zz,num_fold),Specificity(zz,num_fold),Precision(zz,num_fold),Gmean(zz,num_fold),F1score(zz,num_fold)]=prediction_performance(Y_test, predictedLabels1);
     
     
         zz=zz+1;
@@ -68,21 +68,7 @@ for num_fold = 1:C.NumTestSets
 end
 
 
-outcome(num_fold,:)=[accuracy,sensitivity,specificity,precision,gmean,f1score];
 
-%% Average Accuracy 
-Accuracy= sum(accuracy)/C.NumTestSets;
-Sensitivity= sum(sensitivity)/C.NumTestSets;
-Specificity= sum(specificity)/C.NumTestSets;
-Precision= sum(precision)/C.NumTestSets;
-Gmean= sum(gmean)/C.NumTestSets;
-F1score= sum(f1score)/C.NumTestSets;
-
-%% Find the sparsity of PWM
-Sparse_P= nnz(~VWM_P);
-Sparse_S= nnz(~VWM_S);
-Sparse_P_ratio= (Sparse_P/(size(VWM_P,1)*size(VWM_P,2)))*100;
-Sparse_S_ratio= (Sparse_S/(size(VWM_S,1)*size(VWM_S,2)))*100;
 end
 
 %% Funtions
