@@ -11,7 +11,7 @@ addpath /Volumes/eman/chahida/Projects-Dataset/fMRI/StarPlus2018/
 %% Input paramters
 k=1;   %   optimal resolution k=1 
 subject_list=1:6
-ROI_list={'CALC' 'LIPL'  'LOPER' 'LIPS'};%{'CALC'};%{'CALC' 'LIPL' 'LT' 'LTRIA' 'LOPER' 'LIPS' 'LDLPFC'};%
+ROI_list={'CALC'};%{'CALC' 'LIPL' 'LT' 'LTRIA' 'LOPER' 'LIPS' 'LDLPFC'};%{'CALC' 'LIPL'  'LOPER' 'LIPS'};%
 List_classifiers={'svm','logisticRegression','SMLR','nbayes','neural'};
 
 %% 

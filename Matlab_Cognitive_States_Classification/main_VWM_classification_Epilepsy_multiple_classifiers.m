@@ -8,6 +8,7 @@ addpath ../Functions
 addpath ../Functions/Netlab
 addpath ../Functions/Functions_abderrazak
 addpath ../Datasets
+addpath ../Datasets/StarPlus2018
 addpath /Volumes/eman/chahida/Projects-Dataset/fMRI/StarPlus2018/
 
 %% nput parameters

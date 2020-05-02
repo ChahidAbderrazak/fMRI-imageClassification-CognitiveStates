@@ -1,5 +1,5 @@
 % Classify the VWM using Leave one sample out and returns the classificatiom accurcay
-function [outcome, accuracy1, Sparse_P_ratio, Sparse_S_ratio]= Classify_LeaveOut_VWM_functions_clfs(X,Y,k, List_classifiers)
+function [accuracy1, Sparse_P_ratio, Sparse_S_ratio]= Classify_LeaveOut_VWM_functions_clfs(X,Y,k, List_classifiers)
 
 catogries1= [1 2 3 4 5 6];
 % catogries1= [6 4 2 1 3 5];
@@ -63,21 +63,37 @@ for num_fold = 1:C.NumTestSets
 
     X_VWM_train= [X(trIdx,:) VWM_f_train];
     X_VWM_test= [X(teIdx,:) VWM_fP_test];
+    
     %% Train and test the model
     zz=1;
     for clf = List_classifiers
         
-        [classifier] = trainClassifier(VWM_f_train,Y_train, char(clf));   %train classifier
-    %     [classifier] = trainClassifier(X_VWM_train,Y_train, 'logisticRegression');   %train classifier
+        
+        switch char(clf)
+             case {'svm'}
 
-        %% Test the model
-        [predictions1] = applyClassifier(VWM_fP_test, classifier);       %test it
-    %     [predictions1] = applyClassifier(X_VWM_test, classifier);       %test it
+                 SVMModel = fitcsvm(VWM_f_train,Y_train,'KernelFunction','rbf');
+                 [Y_predicted,score] = predict(SVMModel,VWM_fP_test);
+                 [accuracy,sensitivity,specificity,precision,gmean,f1score]=prediction_performance(Y_test, Y_predicted);
+                 acc1(num_fold,zz)= accuracy;  % rank accuracy                
+                
 
-        [result1,predictedLabels1,trace1] = summarizePredictions(predictions1,classifier,'averageRank',Y_test);
-        acc1(num_fold,zz)= 1-result1{1};  % rank accuracy
-        global scores
-        outcome(num_fold,zz,:)=[Y_test  acc1(num_fold) scores];
+             otherwise
+                [classifier] = trainClassifier(VWM_f_train,Y_train, char(clf));   %train classifier
+            %     [classifier] = trainClassifier(X_VWM_train,Y_train, 'logisticRegression');   %train classifier
+
+                %% Test the model
+                [predictions1] = applyClassifier(VWM_fP_test, classifier);       %test it
+            %     [predictions1] = applyClassifier(X_VWM_test, classifier);       %test it
+
+                [result1,predictedLabels1,trace1] = summarizePredictions(predictions1,classifier,'averageRank',Y_test);
+                acc1(num_fold,zz)= 1-result1{1};  % rank accuracy
+                global scores
+%                 
+        end
+
+%        outcome(num_fold,zz,:)=[Y_test  acc1(num_fold) scores];
+     
         
         zz=zz+1;
     end
@@ -89,12 +105,13 @@ end
 %% Average Accuracy 
 accuracy1= mean(acc1);%/sum(C.TestSize);
 
-
 %% Find the sparsity of PWM
 Sparse_P= nnz(~VWM_P);
 Sparse_S= nnz(~VWM_S);
 Sparse_P_ratio= (Sparse_P/(size(VWM_P,1)*size(VWM_P,2)))*100;
 Sparse_S_ratio= (Sparse_S/(size(VWM_S,1)*size(VWM_S,2)))*100;
+
+outcome=[0, 0];
 end
 
 %% Funtions

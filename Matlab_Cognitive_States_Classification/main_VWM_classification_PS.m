@@ -2,6 +2,7 @@ addpath ../Functions
 addpath ../Functions/Netlab
 % addpath /Users/sehrism/Documents/datasets
 addpath ../Datasets
+addpath ../Datasets/StarPlus2018
 addpath R:\chahida\Projects-Dataset\fMRI\StarPlus2018
 
 k_all= [];
